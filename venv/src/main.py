@@ -4,17 +4,273 @@ import os.path
 import os
 import numpy as np
 
+# Registers
+ebp = 0
+esp = 0
+temp = 0
+temp2 = 0
+eax = 0
+
+def executeMvi(op1, op2):
+    op1 = op2
+    return op1
+
+def executeAddl(op1, op2):
+    op1 = op1 + op2
+    return op1
+
+def executeIncl(op1):
+    op1 = op1 + 1
+    return op1
+
+def executeCmpl(op1, op2):
+    op1 = op1 - op2
+    return op1
+
+def executeJle(op1):
+    if op1 <= 0:
+        return True
+    else:
+        return False
+
+
+def readInstruction(pc, instructionList):
+    name = instructionList(pc).getName()
+
+    #mvl instruction
+    operator_1 = instructionList(pc).getJumpName()
+    operator_2 = instructionList(pc).getJumpLine()
+
+#Verifies if it's a direct attribution
+    if operator_2 != "ebp" and operator_2 != "esp" and operator_2 != "temp" \
+            and operator_2 != "temp2" and operator_2 != "eax" and operator_2 != False:
+        if operator_1 == "ebp":
+            if name == "mvi":
+                ebp = executeMvi(ebp, operator_2)
+            elif name == "addl":
+                ebp = executeAddl(ebp, operator_2)
+            elif name == "cmpl":
+                ebp = executeCmpl(ebp, operator_2)
+        elif operator_1 == "esp":
+            if name == "mvi":
+                esp = executeMvi(esp, operator_2)
+            elif name == "addl":
+                esp = executeAddl(esp, operator_2)
+            elif name == "cmpl":
+                esp = executeCmpl(esp, operator_2)
+        elif operator_1 == "temp":
+            if name == "mvi":
+                temp = executeMvi(temp, operator_2)
+            elif name == "addl":
+                temp = executeAddl(temp, operator_2)
+            elif name == "cmpl":
+                temp = executeCmpl(temp, operator_2)
+        elif operator_1 == "temp2":
+            if name == "mvi":
+                temp2 = executeMvi(temp2, operator_2)
+            elif name == "addl":
+                temp2 = executeAddl(temp2, operator_2)
+            elif name == "cmpl":
+                temp2 = executeCmpl(temp2, operator_2)
+        elif operator_1 == "eax":
+            if name == "mvi":
+                eax = executeMvi(eax, operator_2)
+            elif name == "addl":
+                eax = executeAddl(eax, operator_2)
+            elif name == "cmpl":
+                eax = executeCmpl(eax, operator_2)
+
+    # Attribution made by other register
+    elif operator_1 == "ebp":
+        if name == "incl":
+            ebp = executeIncl(ebp)
+        elif name == "jle":
+            instructionList[pc].setIsDeviate(executeJle(ebp)) # Setting if will have deviation or not.
+        elif operator_2 == "esp":
+            if name == "mvi":
+                ebp = executeMvi(ebp, esp)
+            elif name == "addl":
+                ebp = executeAdl(ebp, esp)
+            elif name == "cmpl":
+                ebp = executeCmpl(ebp, esp)
+        elif name == "jle":
+            instructionList[pc].setIsDeviate(executeJle(ebp))
+        elif operator_2  == "temp":
+            if name == "mvi":
+                ebp = executeMvi(ebp, temp)
+            elif name == "addl":
+                ebp = executeAdl(ebp, temp)
+            elif name == "cmpl":
+                ebp = executeCmpl(ebp, temp)
+        elif operator_2  == "temp2":
+            if name == "mvi":
+                ebp = executeMvi(ebp, temp)
+            elif name == "addl":
+                ebp = executeAdl(ebp, temp)
+            elif name == "cmpl":
+                ebp = executeCmpl(ebp, temp)
+        elif operator_2  == "eax":
+            if name == "mvi":
+                ebp = executeMvi(ebp, eax)
+            elif name == "addl":
+                ebp = executeAdl(ebp, eax)
+            elif name == "cmpl":
+                ebp = executeCmpl(ebp, eax)
+
+    elif operator_1 == "esp":
+        if name == "incl":
+            esp = executeIncl(esp)
+        elif name == "jle":
+            instructionList[pc].setIsDeviate(executeJle(esp)) # Setting if will have deviation or not.
+        elif operator_2 == "ebp":
+            if name == "mvi":
+                esp = executeMvi(esp, ebp)
+            elif name == "addl":
+                esp = executeAdl(esp, ebp)
+            elif name == "cmpl":
+                esp = executeCmpl(esp, ebp)
+        elif operator_2 == "temp":
+            if name == "mvi":
+                esp = executeMvi(esp, temp)
+            elif name == "addl":
+                esp = executeAdl(esp, temp)
+            elif name == "cmpl":
+                esp = executeCmpl(esp, temp)
+        elif operator_2 == "temp2":
+            if name == "mvi":
+                esp = executeMvi(esp, temp2)
+            elif name == "addl":
+                esp = executeAdl(esp, temp2)
+            elif name == "cmpl":
+                esp = executeCmpl(esx, temp2)
+        elif operator_2  == "eax":
+            if name == "mvi":
+                esp = executeMvi(esp, eax)
+            elif name == "addl":
+                esp = executeAdl(esp, eax)
+            elif name == "cmpl":
+                esp = executeCmpl(esp, eax)
+    elif operator_1_name == "temp":
+        if name == "incl":
+            temp = executeIncl(temp)
+        elif name == "jle":
+            instructionList[pc].setIsDeviate(executeJle(temp)) # Setting if will have deviation or not.
+        elif operator_2 == "esp":
+            if name == "mvi":
+                temp = executeMvi(temp, esp)
+            elif name == "addl":
+                temp = executeAdl(temp, esp)
+            elif name == "cmpl":
+                temp = executeCmpl(temp, esp)
+        elif operator_2 == "ebp":
+            if name == "mvi":
+                temp = executeMvi(temp, ebp)
+            elif name == "addl":
+                temp = executeAdl(temp, ebp)
+            elif name == "cmpl":
+                temp = executeCmpl(temp, ebp)
+        elif operator_2 == "temp2":
+            if name == "mvi":
+                temp = executeMvi(temp, temp2)
+            elif name == "addl":
+                temp = executeAdl(temp, temp2)
+            elif name == "cmpl":
+                temp = executeCmpl(temp, temp2)
+        elif operator_2 == "eax":
+            if name == "mvi":
+                temp = executeMvi(temp, eax)
+            elif name == "addl":
+                temp = executeAdl(temp, eax)
+            elif name == "cmpl":
+                temp = executeCmpl(temp, eax)
+    elif operator_1_name == "temp2":
+        if name == "incl":
+            temp2 = executeIncl(temp2)
+        elif name == "jle":
+            instructionList[pc].setIsDeviate(executeJle(temp2)) # Setting if will have deviation or not.
+        elif operator_2 == "esp":
+            if name == "mvi":
+                temp2 = executeMvi(temp2, esp)
+            elif name == "addl":
+                temp2 = executeAdl(temp2, esp)
+            elif name == "cmpl":
+                temp2 = executeCmpl(temp2, esp)
+        elif operator_2_name == "ebp":
+            if name == "mvi":
+                temp2 = executeMvi(temp2, ebp)
+            elif name == "addl":
+                temp2 = executeAdl(temp2, ebp)
+            elif name == "cmpl":
+                temp2 = executeCmpl(temp2, ebp)
+        elif operator_2 == "temp":
+            if name == "mvi":
+                temp2 = executeMvi(temp2, temp)
+            elif name == "addl":
+                temp2 = executeAdl(temp2, temp)
+            elif name == "cmpl":
+                temp2 = executeCmpl(temp2, temp)
+        elif operator_2 == "eax":
+            if name == "mvi":
+                temp2 = executeMvi(temp2, eax)
+            elif name == "addl":
+                temp2 = executeAdl(temp2, eax)
+            elif name == "cmpl":
+                temp2 = executeCmpl(temp2, eax)
+    elif operator_1 == "eax":
+        if name == "incl":
+            eax = executeIncl(eax)
+        elif name == "jle":
+            instructionList[pc].setIsDeviate(executeJle(eax)) # Setting if will have deviation or not.
+        elif name == "incl":
+            eax = executeIncl(eax)
+        elif name == "jle":
+            instructionList[pc].setIsDeviate(executeJle(ebp)) # Setting if will have deviation or not.
+        elif operator_2 == "esp":
+            if name == "mvi":
+                eax = executeMvi(eax, esp)
+            elif name == "addl":
+                eax = executeAdl(eax, esp)
+            elif name == "cmpl":
+                eax = executeCmpl(eax, esp)
+        elif operator_2 == "ebp":
+            if name == "mvi":
+                eax = executeMvi(eax, ebp)
+            elif name == "addl":
+                eax = executeAdl(eax, ebp)
+            elif name == "cmpl":
+                eax = executeCmpl(eax, ebp)
+        elif operator_2 == "temp":
+            if name == "mvi":
+                eax = executeMvi(eax, temp)
+            elif name == "addl":
+                eax = executeAdl(eax, temp)
+            elif name == "cmpl":
+                eax = executeCmpl(eax, temp)
+        elif operator_2 == "temp2":
+            if name == "mvi":
+                eax = executeMvi(eax, temp2)
+            elif name == "addl":
+                eax = executeAdl(eax, temp2)
+            elif name == "cmpl":
+                eax = executeCmpl(eax, temp2)
+
+    return pc
+
 flag = False
 while(not flag):
     os.system('cls' if os.name == 'nt' else 'clear') # Clearing console
     directory = input('Name of file in directory "Files": ')
-    directory = 'Files\ ' + directory
-    directory = directory.replace(" ", "")
+    directory = 'Files/' + directory
     if os.path.exists(directory):
         file = open(directory, 'r')
         flag = True
     else:
         print("File doesn't exist, try again...")
+
+# Getting sum number
+number = 6
+while number < 1 and number > 5:
+    number = input('Type number for the sum (1 to 5): ')
 
 instructionNumber = 0
 lineInFile = 0
@@ -28,7 +284,7 @@ for line in file:
     if not ':' in line:  # Select just the instructions
 
         instructionNumber = instructionNumber + 1  # Increasing number of instruction aux variable
-        instruction = Instruction(-1, -1, -1, -1, -1, False)  # Initialize a instruction
+        instruction = Instruction(False, False, False, False, False, False)  # Initialize a instruction
 
         name = line.split().__getitem__(
             0)  # Separate every word from a unique line, and get '0' position, which is name of instruction
@@ -42,12 +298,15 @@ for line in file:
             instruction.setJumpName(jumpName)  # Setting deviation group name in a JUMP instruction
 
             # Choose if program will real deviate or not
-            isDeviate = randint(0, 1)
-            if isDeviate == 0:
-                isDeviate = False
+            # isDeviate = randint(0, 1)
+            # if isDeviate == 0:
+            #     isDeviate = False
+            # else:
+            #     isDeviate= True
+            if name == "jmp":
+                instruction.setIsDeviate(True)
             else:
-                isDeviate= True
-            instruction.setIsDeviate(isDeviate)
+                instruction.setIsDeviate(False)
 
             # Setting some attributes.
         else:
@@ -59,8 +318,8 @@ for line in file:
             if not ";" in operation_2:
                 instruction.setJumpLine(operation_2)  # Maybe it doesn't exist (Third column)
             if instruction.getName() == "ret" or instruction.getName() == "leave":
-                instruction.setJumpLine(-1)
-                instruction.setJumpName(-1)
+                instruction.setJumpLine(False)
+                instruction.setJumpName(False)
             instruction.setIsDeviate(False) # Means no deviation
 
         instructionList.append(instruction)  # Appending one element on a list of instructions
@@ -70,7 +329,7 @@ for line in file:
     else:
         if not '_' in line:  # Here is the lines that countains the name of a group of instruction from a deviation
             groupCounter = groupCounter + 1
-            jump = Instruction(-1, -1, -1, -1, -1, False)  # Iniatialize the object jump
+            jump = Instruction(False, False, False, False, False, False)  # Iniatialize the object jump
 
             name = line.replace(':', "")  # Erasing ":" from this line
 
@@ -147,6 +406,8 @@ def buildPipeline(pipeline, lenght, clock, completedInstructions):
 
             if pipeline[i][clock] == 6:
                 completedInstructions += 1
+
+
                 pc += 1
                 # todo: Read instruction
 
