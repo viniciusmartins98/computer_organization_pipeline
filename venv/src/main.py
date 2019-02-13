@@ -33,6 +33,11 @@ def executeJle(op1):
     else:
         return False
 
+def executeLeave():
+    return "Preparando para encerrar programa."
+
+def executeRet():
+    return "Encerrando programa."
 
 def readInstruction(pc, instructionList):
     name = instructionList(pc).getName()
@@ -41,7 +46,10 @@ def readInstruction(pc, instructionList):
     operator_1 = instructionList(pc).getJumpName()
     operator_2 = instructionList(pc).getJumpLine()
 
-#Verifies if it's a direct attribution
+    if name == "ret":
+        return -1
+
+    #Verifies if it's a direct attribution
     if operator_2 != "ebp" and operator_2 != "esp" and operator_2 != "temp" \
             and operator_2 != "temp2" and operator_2 != "eax" and operator_2 != False:
         if operator_1 == "ebp":
@@ -86,6 +94,8 @@ def readInstruction(pc, instructionList):
             ebp = executeIncl(ebp)
         elif name == "jle":
             instructionList[pc].setIsDeviate(executeJle(ebp)) # Setting if will have deviation or not.
+            if instructionList[pc].getIsDeviate():
+                return instructionList[pc].getJumpLine() - 1
         elif operator_2 == "esp":
             if name == "mvi":
                 ebp = executeMvi(ebp, esp)
@@ -93,8 +103,6 @@ def readInstruction(pc, instructionList):
                 ebp = executeAdl(ebp, esp)
             elif name == "cmpl":
                 ebp = executeCmpl(ebp, esp)
-        elif name == "jle":
-            instructionList[pc].setIsDeviate(executeJle(ebp))
         elif operator_2  == "temp":
             if name == "mvi":
                 ebp = executeMvi(ebp, temp)
@@ -122,6 +130,8 @@ def readInstruction(pc, instructionList):
             esp = executeIncl(esp)
         elif name == "jle":
             instructionList[pc].setIsDeviate(executeJle(esp)) # Setting if will have deviation or not.
+            if instructionList[pc].getIsDeviate():
+                return instructionList[pc].getJumpLine() - 1
         elif operator_2 == "ebp":
             if name == "mvi":
                 esp = executeMvi(esp, ebp)
@@ -155,6 +165,8 @@ def readInstruction(pc, instructionList):
             temp = executeIncl(temp)
         elif name == "jle":
             instructionList[pc].setIsDeviate(executeJle(temp)) # Setting if will have deviation or not.
+            if instructionList[pc].getIsDeviate():
+                return instructionList[pc].getJumpLine() - 1
         elif operator_2 == "esp":
             if name == "mvi":
                 temp = executeMvi(temp, esp)
@@ -188,6 +200,8 @@ def readInstruction(pc, instructionList):
             temp2 = executeIncl(temp2)
         elif name == "jle":
             instructionList[pc].setIsDeviate(executeJle(temp2)) # Setting if will have deviation or not.
+            if instructionList[pc].getIsDeviate():
+                return instructionList[pc].getJumpLine() - 1
         elif operator_2 == "esp":
             if name == "mvi":
                 temp2 = executeMvi(temp2, esp)
@@ -221,10 +235,8 @@ def readInstruction(pc, instructionList):
             eax = executeIncl(eax)
         elif name == "jle":
             instructionList[pc].setIsDeviate(executeJle(eax)) # Setting if will have deviation or not.
-        elif name == "incl":
-            eax = executeIncl(eax)
-        elif name == "jle":
-            instructionList[pc].setIsDeviate(executeJle(ebp)) # Setting if will have deviation or not.
+            if instructionList[pc].getIsDeviate():
+                return instructionList[pc].getJumpLine() - 1
         elif operator_2 == "esp":
             if name == "mvi":
                 eax = executeMvi(eax, esp)
@@ -253,7 +265,7 @@ def readInstruction(pc, instructionList):
                 eax = executeAdl(eax, temp2)
             elif name == "cmpl":
                 eax = executeCmpl(eax, temp2)
-
+    pc = pc + 1
     return pc
 
 flag = False
