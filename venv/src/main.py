@@ -11,20 +11,27 @@ temp = 0
 temp2 = 0
 eax = 0
 
+def printRegisters():
+    print("EBP: ", ebp)
+    print("ESP: ", esp)
+    print("TEMP: ", temp)
+    print("TEMP2: ", temp2)
+    print("EAX: ", eax)
+
 def executeMvi(op1, op2):
     op1 = op2
     return op1
 
 def executeAddl(op1, op2):
-    op1 = op1 + op2
+    op1 = int(op1) + int(op2)
     return op1
 
 def executeIncl(op1):
-    op1 = op1 + 1
+    op1 = int(op1) + 1
     return op1
 
 def executeCmpl(op1, op2):
-    op1 = op1 - op2
+    op1 = int(op1) - op2
     return op1
 
 def executeJle(op1):
@@ -57,35 +64,35 @@ def readInstruction(pc, instructionList):
     if operator_2 != "ebp" and operator_2 != "esp" and operator_2 != "temp" \
             and operator_2 != "temp2" and operator_2 != "eax" and operator_2 != False:
         if operator_1 == "ebp":
-            if name == "mvi":
+            if name == "movl":
                 ebp = executeMvi(ebp, operator_2)
             elif name == "addl":
                 ebp = executeAddl(ebp, operator_2)
             elif name == "cmpl":
                 ebp = executeCmpl(ebp, operator_2)
         elif operator_1 == "esp":
-            if name == "mvi":
+            if name == "movl":
                 esp = executeMvi(esp, operator_2)
             elif name == "addl":
                 esp = executeAddl(esp, operator_2)
             elif name == "cmpl":
                 esp = executeCmpl(esp, operator_2)
         elif operator_1 == "temp":
-            if name == "mvi":
+            if name == "movl":
                 temp = executeMvi(temp, operator_2)
             elif name == "addl":
                 temp = executeAddl(temp, operator_2)
             elif name == "cmpl":
                 temp = executeCmpl(temp, operator_2)
         elif operator_1 == "temp2":
-            if name == "mvi":
+            if name == "movl":
                 temp2 = executeMvi(temp2, operator_2)
             elif name == "addl":
                 temp2 = executeAddl(temp2, operator_2)
             elif name == "cmpl":
                 temp2 = executeCmpl(temp2, operator_2)
         elif operator_1 == "eax":
-            if name == "mvi":
+            if name == "movl":
                 eax = executeMvi(eax, operator_2)
             elif name == "addl":
                 eax = executeAddl(eax, operator_2)
@@ -101,28 +108,28 @@ def readInstruction(pc, instructionList):
             if instructionList[pc].getIsDeviate():
                 return instructionList[pc].getJumpLine() - 1
         elif operator_2 == "esp":
-            if name == "mvi":
+            if name == "movl":
                 ebp = executeMvi(ebp, esp)
             elif name == "addl":
                 ebp = executeAdl(ebp, esp)
             elif name == "cmpl":
                 ebp = executeCmpl(ebp, esp)
         elif operator_2  == "temp":
-            if name == "mvi":
+            if name == "movl":
                 ebp = executeMvi(ebp, temp)
             elif name == "addl":
                 ebp = executeAdl(ebp, temp)
             elif name == "cmpl":
                 ebp = executeCmpl(ebp, temp)
         elif operator_2  == "temp2":
-            if name == "mvi":
+            if name == "movl":
                 ebp = executeMvi(ebp, temp)
             elif name == "addl":
                 ebp = executeAdl(ebp, temp)
             elif name == "cmpl":
                 ebp = executeCmpl(ebp, temp)
         elif operator_2  == "eax":
-            if name == "mvi":
+            if name == "movl":
                 ebp = executeMvi(ebp, eax)
             elif name == "addl":
                 ebp = executeAdl(ebp, eax)
@@ -137,28 +144,28 @@ def readInstruction(pc, instructionList):
             if instructionList[pc].getIsDeviate():
                 return instructionList[pc].getJumpLine() - 1
         elif operator_2 == "ebp":
-            if name == "mvi":
+            if name == "movl":
                 esp = executeMvi(esp, ebp)
             elif name == "addl":
                 esp = executeAdl(esp, ebp)
             elif name == "cmpl":
                 esp = executeCmpl(esp, ebp)
         elif operator_2 == "temp":
-            if name == "mvi":
+            if name == "movl":
                 esp = executeMvi(esp, temp)
             elif name == "addl":
                 esp = executeAdl(esp, temp)
             elif name == "cmpl":
                 esp = executeCmpl(esp, temp)
         elif operator_2 == "temp2":
-            if name == "mvi":
+            if name == "movl":
                 esp = executeMvi(esp, temp2)
             elif name == "addl":
                 esp = executeAdl(esp, temp2)
             elif name == "cmpl":
                 esp = executeCmpl(esx, temp2)
         elif operator_2  == "eax":
-            if name == "mvi":
+            if name == "movl":
                 esp = executeMvi(esp, eax)
             elif name == "addl":
                 esp = executeAdl(esp, eax)
@@ -172,28 +179,28 @@ def readInstruction(pc, instructionList):
             if instructionList[pc].getIsDeviate():
                 return instructionList[pc].getJumpLine() - 1
         elif operator_2 == "esp":
-            if name == "mvi":
+            if name == "movl":
                 temp = executeMvi(temp, esp)
             elif name == "addl":
                 temp = executeAdl(temp, esp)
             elif name == "cmpl":
                 temp = executeCmpl(temp, esp)
         elif operator_2 == "ebp":
-            if name == "mvi":
+            if name == "movl":
                 temp = executeMvi(temp, ebp)
             elif name == "addl":
                 temp = executeAdl(temp, ebp)
             elif name == "cmpl":
                 temp = executeCmpl(temp, ebp)
         elif operator_2 == "temp2":
-            if name == "mvi":
+            if name == "movl":
                 temp = executeMvi(temp, temp2)
             elif name == "addl":
                 temp = executeAdl(temp, temp2)
             elif name == "cmpl":
                 temp = executeCmpl(temp, temp2)
         elif operator_2 == "eax":
-            if name == "mvi":
+            if name == "movl":
                 temp = executeMvi(temp, eax)
             elif name == "addl":
                 temp = executeAdl(temp, eax)
@@ -207,28 +214,28 @@ def readInstruction(pc, instructionList):
             if instructionList[pc].getIsDeviate():
                 return instructionList[pc].getJumpLine() - 1
         elif operator_2 == "esp":
-            if name == "mvi":
+            if name == "movl":
                 temp2 = executeMvi(temp2, esp)
             elif name == "addl":
                 temp2 = executeAdl(temp2, esp)
             elif name == "cmpl":
                 temp2 = executeCmpl(temp2, esp)
         elif operator_2 == "ebp":
-            if name == "mvi":
+            if name == "movl":
                 temp2 = executeMvi(temp2, ebp)
             elif name == "addl":
                 temp2 = executeAdl(temp2, ebp)
             elif name == "cmpl":
                 temp2 = executeCmpl(temp2, ebp)
         elif operator_2 == "temp":
-            if name == "mvi":
+            if name == "movl":
                 temp2 = executeMvi(temp2, temp)
             elif name == "addl":
                 temp2 = executeAdl(temp2, temp)
             elif name == "cmpl":
                 temp2 = executeCmpl(temp2, temp)
         elif operator_2 == "eax":
-            if name == "mvi":
+            if name == "movl":
                 temp2 = executeMvi(temp2, eax)
             elif name == "addl":
                 temp2 = executeAdl(temp2, eax)
@@ -242,28 +249,28 @@ def readInstruction(pc, instructionList):
             if instructionList[pc].getIsDeviate():
                 return instructionList[pc].getJumpLine() - 1
         elif operator_2 == "esp":
-            if name == "mvi":
+            if name == "movl":
                 eax = executeMvi(eax, esp)
             elif name == "addl":
                 eax = executeAdl(eax, esp)
             elif name == "cmpl":
                 eax = executeCmpl(eax, esp)
         elif operator_2 == "ebp":
-            if name == "mvi":
+            if name == "movl":
                 eax = executeMvi(eax, ebp)
             elif name == "addl":
                 eax = executeAdl(eax, ebp)
             elif name == "cmpl":
                 eax = executeCmpl(eax, ebp)
         elif operator_2 == "temp":
-            if name == "mvi":
+            if name == "movl":
                 eax = executeMvi(eax, temp)
             elif name == "addl":
                 eax = executeAdl(eax, temp)
             elif name == "cmpl":
                 eax = executeCmpl(eax, temp)
         elif operator_2 == "temp2":
-            if name == "mvi":
+            if name == "movl":
                 eax = executeMvi(eax, temp2)
             elif name == "addl":
                 eax = executeAdl(eax, temp2)
@@ -423,6 +430,7 @@ def buildPipeline(pipeline, lenght, clock, completedInstructions):
             if pipeline[i][clock] == 6:
                 completedInstructions += 1
 
+                printRegisters()
                 aux = pc
                 pc = readInstruction(pc, instructionList)
 
