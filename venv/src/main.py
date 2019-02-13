@@ -2,6 +2,7 @@ from instruction import Instruction
 from random import randint
 import os.path
 import os
+import numpy as np
 
 flag = False
 while(not flag):
@@ -32,6 +33,10 @@ for line in file:
         name = line.split().__getitem__(
             0)  # Separate every word from a unique line, and get '0' position, which is name of instruction
 
+        instruction.setNumber(instructionNumber)  # Setting number of the instruction
+        instruction.setName(name)  # Setting name of instruction
+        instruction.setLine(lineInFile)  # Setting line number of this instruction in file
+
         if name == 'jmp' or name == 'je' or name == 'jne' or name == 'jg' or name == 'jge' or name == 'jl' or name == 'jle':  # If name is a deviation Instruction so...
             jumpName = line.split().__getitem__(1)  # Get the second word from this line, and here is the name of a group of instructions
             instruction.setJumpName(jumpName)  # Setting deviation group name in a JUMP instruction
@@ -44,17 +49,19 @@ for line in file:
                 isDeviate= True
             instruction.setIsDeviate(isDeviate)
 
+            # Setting some attributes.
         else:
             operation_1 = line.split().__getitem__(1)
-            operation_1.replace()
+            operation_1 = operation_1.replace(",","")
             operation_2 = line.split().__getitem__(2)
-            instruction.setJumpName(operation_1)  # Setting operator 1. (Second column)
-            instruction.setJumpLine(operation_2)  # Maybe it doesn't exist (Third column)
+            if not ";" in operation_1:
+                instruction.setJumpName(operation_1)  # Setting operator 1. (Second column)
+            if not ";" in operation_2:
+                instruction.setJumpLine(operation_2)  # Maybe it doesn't exist (Third column)
+            if instruction.getName() == "ret" or instruction.getName() == "leave":
+                instruction.setJumpLine(-1)
+                instruction.setJumpName(-1)
             instruction.setIsDeviate(False) # Means no deviation
-
-        instruction.setNumber(instructionNumber)  # Setting number of the instruction
-        instruction.setName(name)  # Setting name of instruction
-        instruction.setLine(lineInFile)  # Setting line number of this instruction in file
 
         instructionList.append(instruction)  # Appending one element on a list of instructions
 
