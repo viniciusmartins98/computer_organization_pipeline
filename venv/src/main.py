@@ -45,8 +45,12 @@ for line in file:
             instruction.setIsDeviate(isDeviate)
 
         else:
-            instruction.setJumpName(-1)  # "-1" Means: No deviation
-            instruction.setJumpLine(-1)  # "-1" Means: No deviation
+            operation_1 = line.split().__getitem__(1)
+            operation_1.replace()
+            operation_2 = line.split().__getitem__(2)
+            instruction.setJumpName(operation_1)  # Setting operator 1. (Second column)
+            instruction.setJumpLine(operation_2)  # Maybe it doesn't exist (Third column)
+            instruction.setIsDeviate(False) # Means no deviation
 
         instruction.setNumber(instructionNumber)  # Setting number of the instruction
         instruction.setName(name)  # Setting name of instruction
@@ -144,9 +148,6 @@ def buildPipeline(pipeline, lenght, clock, completedInstructions):
                     break
 
     return completedInstructions  # return number of instruction witch had already been read
-
-
-# if __name__ == '__main__':
 
 #  inicialization of variables
 clock = 0
