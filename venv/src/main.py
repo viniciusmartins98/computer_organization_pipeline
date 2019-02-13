@@ -6,7 +6,7 @@ import numpy as np
 
 # Registers
 ebp = 0
-esp = 0
+esp = 3
 temp = 0
 temp2 = 0
 eax = 0
@@ -419,11 +419,10 @@ def buildPipeline(pipeline, lenght, clock, completedInstructions):
             if pipeline[i][clock] == 6:
                 completedInstructions += 1
 
+                aux = pc # Save back pc information, to check a deviation.
+                pc = readInstruction(pc, instructionList)
 
-                pc += 1
-                # todo: Read instruction
-
-                if instructionList[pc].getJumpLine() != -1: # Means that happens a deviation
+                if instructionList[aux].getIsDeviate(): # Means that happens a deviation
                     pc = int(instructionList[pc].getJumpLine()-1)
                     break
 
