@@ -50,6 +50,8 @@ def readInstruction(pc, instructionList):
 
     if name == "ret":
         return -1
+    if name == "jmp":
+        return instructionList[pc].getJumpLine() - 1
 
     #Verifies if it's a direct attribution
     if operator_2 != "ebp" and operator_2 != "esp" and operator_2 != "temp" \
@@ -421,11 +423,10 @@ def buildPipeline(pipeline, lenght, clock, completedInstructions):
             if pipeline[i][clock] == 6:
                 completedInstructions += 1
 
-                print ("PC = ", pc)
+                aux = pc
                 pc = readInstruction(pc, instructionList)
 
-                if instructionList[pc].getIsDeviate(): # Means that happens a deviation
-                    pc = int(instructionList[pc].getJumpLine()-1)
+                if instructionList[aux].getNumber()+1 != instructionList[pc].getNumber(): # Means that happens a deviation
                     break
 
     return completedInstructions  # return number of instruction witch had already been read
