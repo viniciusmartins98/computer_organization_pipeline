@@ -56,7 +56,7 @@ def readInstruction(pc, instructionList):
     operator_2 = instructionList[pc].getJumpLine()
 
     if name == "ret":
-        return -1
+        return -5
     if name == "jmp":
         return instructionList[pc].getJumpLine() - 1
 
@@ -114,21 +114,21 @@ def readInstruction(pc, instructionList):
                 ebp = executeAdl(ebp, esp)
             elif name == "cmpl":
                 ebp = executeCmpl(ebp, esp)
-        elif operator_2  == "temp":
+        elif operator_2 == "temp":
             if name == "movl":
                 ebp = executeMvi(ebp, temp)
             elif name == "addl":
                 ebp = executeAdl(ebp, temp)
             elif name == "cmpl":
                 ebp = executeCmpl(ebp, temp)
-        elif operator_2  == "temp2":
+        elif operator_2 == "temp2":
             if name == "movl":
                 ebp = executeMvi(ebp, temp)
             elif name == "addl":
                 ebp = executeAdl(ebp, temp)
             elif name == "cmpl":
                 ebp = executeCmpl(ebp, temp)
-        elif operator_2  == "eax":
+        elif operator_2 == "eax":
             if name == "movl":
                 ebp = executeMvi(ebp, eax)
             elif name == "addl":
@@ -164,7 +164,7 @@ def readInstruction(pc, instructionList):
                 esp = executeAdl(esp, temp2)
             elif name == "cmpl":
                 esp = executeCmpl(esx, temp2)
-        elif operator_2  == "eax":
+        elif operator_2 == "eax":
             if name == "movl":
                 esp = executeMvi(esp, eax)
             elif name == "addl":
@@ -276,7 +276,6 @@ def readInstruction(pc, instructionList):
                 eax = executeAdl(eax, temp2)
             elif name == "cmpl":
                 eax = executeCmpl(eax, temp2)
-    pc = pc + 1
     return pc
 
 flag = False
@@ -385,6 +384,8 @@ file.close()
 
 flag_aux = 1
 
+id = np.zeros((1, 50))
+
 def renderPipeline(pipeline, lenght, clock, completedInstructions):
 
     for i in range(40):
@@ -393,10 +394,11 @@ def renderPipeline(pipeline, lenght, clock, completedInstructions):
     print("CLK", clock)  # display variable clock
     print()  # move cursor down to next line
 
-    for i in range(lenght):  # for i to lenght
+    for i in range(lenght+1):  # for i to lenght
         print()  # move cursor down to next line
         # print("instruction", pc[0][i], "\t", end=" ")  # display pipeline steps
-        for j in range(clock):
+        print(id[0][i], end=" ")
+        for j in range(clock+1):
             if pipeline[i][j] == 1:
                 print(" FI ", end=" ")
             elif pipeline[i][j] == 2:
@@ -415,12 +417,20 @@ def renderPipeline(pipeline, lenght, clock, completedInstructions):
     print()
     print("\nCompleted Instructions :", completedInstructions)
     print()
+    for i in range(40):
+        print("-", end=" ")  # display "------"
+    print()
+    printRegisters()
 
-pc = 0
+pc = -1
+count = 0
 def buildPipeline(pipeline, lenght, clock, completedInstructions):
     global flag_aux # to modify global variable
     global pc
+    global count
 
+    id[0][count] = count + 1
+    count += 1
     pipeline[lenght][clock] = 1  # set 1 on the diagonal of the matrix
     if clock != 0:
         for i in range(lenght):
@@ -430,11 +440,14 @@ def buildPipeline(pipeline, lenght, clock, completedInstructions):
             if pipeline[i][clock] == 6:
                 completedInstructions += 1
 
-                printRegisters()
+                pc = pc + 1
                 aux = pc
                 pc = readInstruction(pc, instructionList)
-
-                if instructionList[aux].getNumber()+1 != instructionList[pc].getNumber(): # Means that happens a deviation
+                print('PC', pc)
+                print('AUX', aux)
+                if (aux != pc):
+                    id[0][count - 1] = pc + 1
+                    count = pc + 1
                     break
 
     return completedInstructions  # return number of instruction witch had already been read
@@ -453,11 +466,12 @@ while option != '0':
 
     #  call functions to build and render the pipeline
     completedInstructions = buildPipeline(pipeline, lenght, clock, completedInstructions)
+    # verify if next instruction != NULL
+    if pc == -5:
+        endProgram = 1
+        break
     renderPipeline(pipeline, lenght, clock, completedInstructions)
     clock += 1
-    #verify if next instruction != NULL
-    # if yes:
-        #endProgram = 1
 
     if lenght < 50: #if endProgram != 1:
         lenght += 1
