@@ -40,11 +40,13 @@ def executeRet():
     return "Encerrando programa."
 
 def readInstruction(pc, instructionList):
-    name = instructionList(pc).getName()
+    global ebp, esp, temp, temp2, eax
+
+    name = instructionList[pc].getName()
 
     #mvl instruction
-    operator_1 = instructionList(pc).getJumpName()
-    operator_2 = instructionList(pc).getJumpLine()
+    operator_1 = instructionList[pc].getJumpName()
+    operator_2 = instructionList[pc].getJumpLine()
 
     if name == "ret":
         return -1
@@ -160,7 +162,7 @@ def readInstruction(pc, instructionList):
                 esp = executeAdl(esp, eax)
             elif name == "cmpl":
                 esp = executeCmpl(esp, eax)
-    elif operator_1_name == "temp":
+    elif operator_1== "temp":
         if name == "incl":
             temp = executeIncl(temp)
         elif name == "jle":
@@ -195,7 +197,7 @@ def readInstruction(pc, instructionList):
                 temp = executeAdl(temp, eax)
             elif name == "cmpl":
                 temp = executeCmpl(temp, eax)
-    elif operator_1_name == "temp2":
+    elif operator_1 == "temp2":
         if name == "incl":
             temp2 = executeIncl(temp2)
         elif name == "jle":
@@ -209,7 +211,7 @@ def readInstruction(pc, instructionList):
                 temp2 = executeAdl(temp2, esp)
             elif name == "cmpl":
                 temp2 = executeCmpl(temp2, esp)
-        elif operator_2_name == "ebp":
+        elif operator_2 == "ebp":
             if name == "mvi":
                 temp2 = executeMvi(temp2, ebp)
             elif name == "addl":
@@ -281,7 +283,7 @@ while(not flag):
 
 # Getting sum number
 number = 6
-while number < 1 and number > 5:
+while 1 > number > 5:
     number = input('Type number for the sum (1 to 5): ')
 
 instructionNumber = 0
@@ -405,7 +407,7 @@ def renderPipeline(pipeline, lenght, clock, completedInstructions):
     print("\nCompleted Instructions :", completedInstructions)
     print()
 
-pc = -1
+pc = 0
 def buildPipeline(pipeline, lenght, clock, completedInstructions):
     global flag_aux # to modify global variable
     global pc
@@ -419,10 +421,10 @@ def buildPipeline(pipeline, lenght, clock, completedInstructions):
             if pipeline[i][clock] == 6:
                 completedInstructions += 1
 
-                aux = pc # Save back pc information, to check a deviation.
+                print ("PC = ", pc)
                 pc = readInstruction(pc, instructionList)
 
-                if instructionList[aux].getIsDeviate(): # Means that happens a deviation
+                if instructionList[pc].getIsDeviate(): # Means that happens a deviation
                     pc = int(instructionList[pc].getJumpLine()-1)
                     break
 
