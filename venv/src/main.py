@@ -11,6 +11,8 @@ temp = 0
 temp2 = 0
 eax = 0
 
+aux_operator = 0
+
 def printRegisters():
     print("EBP: ", ebp)
     print("ESP: ", esp)
@@ -47,7 +49,7 @@ def executeRet():
     return "Encerrando programa."
 
 def readInstruction(pc, instructionList):
-    global ebp, esp, temp, temp2, eax
+    global ebp, esp, temp, temp2, eax, aux_operator
 
     name = instructionList[pc].getName()
 
@@ -55,10 +57,16 @@ def readInstruction(pc, instructionList):
     operator_1 = instructionList[pc].getJumpName()
     operator_2 = instructionList[pc].getJumpLine()
 
+
     if name == "ret":
         return -5
-    if name == "jmp":
+    elif name == "jmp":
         return instructionList[pc].getJumpLine() - 1
+
+    elif name == "jle":
+        instructionList[pc].setIsDeviate(executeJle(aux_operator))  # Setting if will have deviation or not.
+        if instructionList[pc].getIsDeviate():
+            return instructionList[pc].getJumpLine() - 1
 
     #Verifies if it's a direct attribution
     if operator_2 != "ebp" and operator_2 != "esp" and operator_2 != "temp" \
@@ -69,213 +77,194 @@ def readInstruction(pc, instructionList):
             elif name == "addl":
                 ebp = executeAddl(ebp, operator_2)
             elif name == "cmpl":
-                ebp = executeCmpl(ebp, operator_2)
+                aux_operator = executeCmpl(ebp, operator_2)
         elif operator_1 == "esp":
             if name == "movl":
                 esp = executeMvi(esp, operator_2)
             elif name == "addl":
                 esp = executeAddl(esp, operator_2)
             elif name == "cmpl":
-                esp = executeCmpl(esp, operator_2)
+                aux_operator = executeCmpl(esp, operator_2)
         elif operator_1 == "temp":
             if name == "movl":
                 temp = executeMvi(temp, operator_2)
             elif name == "addl":
                 temp = executeAddl(temp, operator_2)
             elif name == "cmpl":
-                temp = executeCmpl(temp, operator_2)
+                aux_operator = executeCmpl(temp, operator_2)
         elif operator_1 == "temp2":
             if name == "movl":
                 temp2 = executeMvi(temp2, operator_2)
             elif name == "addl":
                 temp2 = executeAddl(temp2, operator_2)
             elif name == "cmpl":
-                temp2 = executeCmpl(temp2, operator_2)
+                aux_operator = executeCmpl(temp2, operator_2)
+                aux_operator = temp2
         elif operator_1 == "eax":
             if name == "movl":
                 eax = executeMvi(eax, operator_2)
             elif name == "addl":
                 eax = executeAddl(eax, operator_2)
             elif name == "cmpl":
-                eax = executeCmpl(eax, operator_2)
+                aux_operator = executeCmpl(eax, operator_2)
 
     # Attribution made by other register
     elif operator_1 == "ebp":
         if name == "incl":
             ebp = executeIncl(ebp)
-        elif name == "jle":
-            instructionList[pc].setIsDeviate(executeJle(ebp)) # Setting if will have deviation or not.
-            if instructionList[pc].getIsDeviate():
-                return instructionList[pc].getJumpLine() - 1
         elif operator_2 == "esp":
             if name == "movl":
                 ebp = executeMvi(ebp, esp)
             elif name == "addl":
-                ebp = executeAdl(ebp, esp)
+                ebp = executeAddl(ebp, esp)
             elif name == "cmpl":
-                ebp = executeCmpl(ebp, esp)
+                aux_operator = executeCmpl(ebp, esp)
         elif operator_2 == "temp":
             if name == "movl":
                 ebp = executeMvi(ebp, temp)
             elif name == "addl":
-                ebp = executeAdl(ebp, temp)
+                ebp = executeAddl(ebp, temp)
             elif name == "cmpl":
-                ebp = executeCmpl(ebp, temp)
+                aux_operator = executeCmpl(ebp, temp)
         elif operator_2 == "temp2":
             if name == "movl":
                 ebp = executeMvi(ebp, temp)
             elif name == "addl":
-                ebp = executeAdl(ebp, temp)
+                ebp = executeAddl(ebp, temp)
             elif name == "cmpl":
-                ebp = executeCmpl(ebp, temp)
+                aux_operator = executeCmpl(ebp, temp)
         elif operator_2 == "eax":
             if name == "movl":
                 ebp = executeMvi(ebp, eax)
             elif name == "addl":
-                ebp = executeAdl(ebp, eax)
+                ebp = executeAddl(ebp, eax)
             elif name == "cmpl":
-                ebp = executeCmpl(ebp, eax)
+                aux_operator = executeCmpl(ebp, eax)
 
     elif operator_1 == "esp":
         if name == "incl":
             esp = executeIncl(esp)
-        elif name == "jle":
-            instructionList[pc].setIsDeviate(executeJle(esp)) # Setting if will have deviation or not.
-            if instructionList[pc].getIsDeviate():
-                return instructionList[pc].getJumpLine() - 1
         elif operator_2 == "ebp":
             if name == "movl":
                 esp = executeMvi(esp, ebp)
             elif name == "addl":
-                esp = executeAdl(esp, ebp)
+                esp = executeAddl(esp, ebp)
             elif name == "cmpl":
-                esp = executeCmpl(esp, ebp)
+                aux_operator = executeCmpl(esp, ebp)
         elif operator_2 == "temp":
             if name == "movl":
                 esp = executeMvi(esp, temp)
             elif name == "addl":
-                esp = executeAdl(esp, temp)
+                esp = executeAddl(esp, temp)
             elif name == "cmpl":
-                esp = executeCmpl(esp, temp)
+                aux_operator = executeCmpl(esp, temp)
         elif operator_2 == "temp2":
             if name == "movl":
                 esp = executeMvi(esp, temp2)
             elif name == "addl":
-                esp = executeAdl(esp, temp2)
+                esp = executeAddl(esp, temp2)
             elif name == "cmpl":
-                esp = executeCmpl(esx, temp2)
+                aux_operator = executeCmpl(esx, temp2)
         elif operator_2 == "eax":
             if name == "movl":
                 esp = executeMvi(esp, eax)
             elif name == "addl":
-                esp = executeAdl(esp, eax)
+                esp = executeAddl(esp, eax)
             elif name == "cmpl":
-                esp = executeCmpl(esp, eax)
+                aux_operator = executeCmpl(esp, eax)
     elif operator_1== "temp":
         if name == "incl":
             temp = executeIncl(temp)
-        elif name == "jle":
-            instructionList[pc].setIsDeviate(executeJle(temp)) # Setting if will have deviation or not.
-            if instructionList[pc].getIsDeviate():
-                return instructionList[pc].getJumpLine() - 1
         elif operator_2 == "esp":
             if name == "movl":
                 temp = executeMvi(temp, esp)
             elif name == "addl":
-                temp = executeAdl(temp, esp)
+                temp = executeAddl(temp, esp)
             elif name == "cmpl":
-                temp = executeCmpl(temp, esp)
+                aux_operator = executeCmpl(temp, esp)
         elif operator_2 == "ebp":
             if name == "movl":
                 temp = executeMvi(temp, ebp)
             elif name == "addl":
-                temp = executeAdl(temp, ebp)
+                temp = executeAddl(temp, ebp)
             elif name == "cmpl":
-                temp = executeCmpl(temp, ebp)
+                aux_operator = executeCmpl(temp, ebp)
         elif operator_2 == "temp2":
             if name == "movl":
                 temp = executeMvi(temp, temp2)
             elif name == "addl":
-                temp = executeAdl(temp, temp2)
+                temp = executeAddl(temp, temp2)
             elif name == "cmpl":
-                temp = executeCmpl(temp, temp2)
+                aux_operator = executeCmpl(temp, temp2)
         elif operator_2 == "eax":
             if name == "movl":
                 temp = executeMvi(temp, eax)
             elif name == "addl":
-                temp = executeAdl(temp, eax)
+                temp = executeAddl(temp, eax)
             elif name == "cmpl":
-                temp = executeCmpl(temp, eax)
+                aux_operator = executeCmpl(temp, eax)
     elif operator_1 == "temp2":
         if name == "incl":
             temp2 = executeIncl(temp2)
-        elif name == "jle":
-            instructionList[pc].setIsDeviate(executeJle(temp2)) # Setting if will have deviation or not.
-            if instructionList[pc].getIsDeviate():
-                return instructionList[pc].getJumpLine() - 1
         elif operator_2 == "esp":
             if name == "movl":
                 temp2 = executeMvi(temp2, esp)
             elif name == "addl":
-                temp2 = executeAdl(temp2, esp)
+                temp2 = executeAddl(temp2, esp)
             elif name == "cmpl":
-                temp2 = executeCmpl(temp2, esp)
+                aux_operator = executeCmpl(temp2, esp)
         elif operator_2 == "ebp":
             if name == "movl":
                 temp2 = executeMvi(temp2, ebp)
             elif name == "addl":
-                temp2 = executeAdl(temp2, ebp)
+                temp2 = executeAddl(temp2, ebp)
             elif name == "cmpl":
-                temp2 = executeCmpl(temp2, ebp)
+                aux_operator = executeCmpl(temp2, ebp)
         elif operator_2 == "temp":
             if name == "movl":
                 temp2 = executeMvi(temp2, temp)
             elif name == "addl":
-                temp2 = executeAdl(temp2, temp)
+                temp2 = executeAddl(temp2, temp)
             elif name == "cmpl":
-                temp2 = executeCmpl(temp2, temp)
+                aux_operator = executeCmpl(temp2, temp)
         elif operator_2 == "eax":
             if name == "movl":
                 temp2 = executeMvi(temp2, eax)
             elif name == "addl":
-                temp2 = executeAdl(temp2, eax)
+                temp2 = executeAddl(temp2, eax)
             elif name == "cmpl":
-                temp2 = executeCmpl(temp2, eax)
+                aux_operator = executeCmpl(temp2, eax)
     elif operator_1 == "eax":
         if name == "incl":
             eax = executeIncl(eax)
-        elif name == "jle":
-            instructionList[pc].setIsDeviate(executeJle(eax)) # Setting if will have deviation or not.
-            if instructionList[pc].getIsDeviate():
-                return instructionList[pc].getJumpLine() - 1
         elif operator_2 == "esp":
             if name == "movl":
                 eax = executeMvi(eax, esp)
             elif name == "addl":
-                eax = executeAdl(eax, esp)
+                eax = executeAddl(eax, esp)
             elif name == "cmpl":
-                eax = executeCmpl(eax, esp)
+                aux_operator = executeCmpl(eax, esp)
         elif operator_2 == "ebp":
             if name == "movl":
                 eax = executeMvi(eax, ebp)
             elif name == "addl":
-                eax = executeAdl(eax, ebp)
+                eax = executeAddl(eax, ebp)
             elif name == "cmpl":
-                eax = executeCmpl(eax, ebp)
+                aux_operator = executeCmpl(eax, ebp)
         elif operator_2 == "temp":
             if name == "movl":
                 eax = executeMvi(eax, temp)
             elif name == "addl":
-                eax = executeAdl(eax, temp)
+                eax = executeAddl(eax, temp)
             elif name == "cmpl":
-                eax = executeCmpl(eax, temp)
+                aux_operator = executeCmpl(eax, temp)
         elif operator_2 == "temp2":
             if name == "movl":
                 eax = executeMvi(eax, temp2)
             elif name == "addl":
-                eax = executeAdl(eax, temp2)
+                eax = executeAddl(eax, temp2)
             elif name == "cmpl":
-                eax = executeCmpl(eax, temp2)
+                aux_operator = executeCmpl(eax, temp2)
     return pc
 
 flag = False
