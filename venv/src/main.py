@@ -13,6 +13,8 @@ eax = 0
 
 aux_operator = 0
 
+
+
 def printRegisters():
     print("EBP: ", ebp)
     print("ESP: ", esp)
@@ -21,7 +23,7 @@ def printRegisters():
     print("EAX: ", eax)
 
 def executeMvi(op1, op2):
-    op1 = op2
+    op1 = int(op2)
     return op1
 
 def executeAddl(op1, op2):
@@ -33,7 +35,8 @@ def executeIncl(op1):
     return op1
 
 def executeCmpl(op1, op2):
-    op1 = int(op1) - op2
+    op1 = int(op1) - int(op2)
+    print("OP CMP: ", op1)
     return op1
 
 def executeJle(op1):
@@ -265,7 +268,7 @@ def readInstruction(pc, instructionList):
                 eax = executeAddl(eax, temp2)
             elif name == "cmpl":
                 aux_operator = executeCmpl(eax, temp2)
-    return pc
+    return pc + 1
 
 flag = False
 while(not flag):
@@ -373,7 +376,7 @@ file.close()
 
 flag_aux = 1
 
-id = np.zeros((1, 50))
+id = np.zeros((1, 100))
 
 def renderPipeline(pipeline, lenght, clock, completedInstructions):
 
@@ -411,7 +414,7 @@ def renderPipeline(pipeline, lenght, clock, completedInstructions):
     print()
     printRegisters()
 
-pc = -1
+pc = 0
 count = 0
 def buildPipeline(pipeline, lenght, clock, completedInstructions):
     global flag_aux # to modify global variable
@@ -431,12 +434,12 @@ def buildPipeline(pipeline, lenght, clock, completedInstructions):
 
                 pc = pc + 1
                 aux = pc
-                pc = readInstruction(pc, instructionList)
+                pc = readInstruction(pc-1, instructionList)
                 print('PC', pc)
                 print('AUX', aux)
                 if (aux != pc):
-                    id[0][count - 1] = pc + 1
-                    count = pc + 1
+                    id[0][count - 1] = pc
+                    count = pc
                     break
 
     return completedInstructions  # return number of instruction witch had already been read
@@ -446,8 +449,8 @@ clock = 0
 lenght = 0
 option = '1'
 completedInstructions = 0
-pipeline = np.zeros((50, 50))
-endProgram = 0
+pipeline = np.zeros((100, 100))
+endProgram = False
 
 # run while input != "0"
 print('Type any key to proceed and 0 to exit!')
@@ -457,12 +460,12 @@ while option != '0':
     completedInstructions = buildPipeline(pipeline, lenght, clock, completedInstructions)
     # verify if next instruction != NULL
     if pc == -5:
-        endProgram = 1
+        endProgram = True
         break
     renderPipeline(pipeline, lenght, clock, completedInstructions)
     clock += 1
 
-    if lenght < 50: #if endProgram != 1:
+    if not endProgram: #if endProgram != 1:
         lenght += 1
 
     option = input()
