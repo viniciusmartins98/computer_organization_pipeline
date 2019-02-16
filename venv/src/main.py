@@ -464,8 +464,6 @@ esp = iNum
  # This function creates a list of instructions based on assembly file.
 instructionList = readFile(file, instructionList)
 
-printInstructionList(instructionList)
-
 # run while input != "0"
 print('Type any key to proceed and 0 to exit!')
 while option != '0':
