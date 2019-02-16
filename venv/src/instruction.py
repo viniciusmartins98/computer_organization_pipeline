@@ -16,10 +16,10 @@ class Instruction:
     def getNumber(self):
         return self.number
 
-    def getJumpName(self):
+    def getOP1(self):
         return self.operator_1
 
-    def getJumpLine(self):
+    def getOP2(self):
         return self.operator_2
 
     def getIsDeviate(self):
@@ -34,10 +34,10 @@ class Instruction:
     def setNumber(self, number):
         self.number = number
 
-    def setJumpName(self, operator_1):
+    def setOP1(self, operator_1):
         self.operator_1 = operator_1
 
-    def setJumpLine(self, operator_2):
+    def setOP2(self, operator_2):
         self.operator_2 = operator_2
 
     def setIsDeviate(self, isDeviate):
