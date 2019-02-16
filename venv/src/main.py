@@ -4,16 +4,25 @@ import os.path
 import os
 import numpy as np
 
+#Global variables:
 # Registers
 ebp = 0
-esp = 2
+esp = 0
 temp = 0
 temp2 = 0
 eax = 0
 
+# aux for cmpl and jle function
 aux_operator = 0
 
+flag_aux = 1
 
+id = np.zeros((1, 100))
+
+# List of all assembly instructions (Created by readFile function)
+
+pc = 0 # Program counter
+count = 0
 
 def printRegisters():
     print("EBP: ", ebp)
@@ -270,120 +279,93 @@ def readInstruction(pc, instructionList):
                 aux_operator = executeCmpl(eax, temp2)
     return pc + 1
 
-flag = False
-while(not flag):
-    os.system('cls' if os.name == 'nt' else 'clear') # Clearing console
-    directory = input('Name of file in directory "Files": ')
-    directory = 'Files/' + directory
-    if os.path.exists(directory):
-        file = open(directory, 'r')
-        flag = True
-    else:
-        print("File doesn't exist, try again...")
-
-# Getting sum number
-number = 6
-while 1 > number > 5:
-    number = input('Type number for the sum (1 to 5): ')
-
-instructionNumber = 0
-lineInFile = 0
-groupCounter = 0  # Count how many groups of instructions the program have
-instructionList = []  # List of all assembly instructions
-jumpList = []
-
 # Run all file lines
-for line in file:
-    line = line.rstrip()
-    if not ':' in line:  # Select just the instructions
+def readFile(file, instructionList):
+    instructionNumber = 0
+    lineInFile = 0
+    groupCounter = 0  # Count how many groups of instructions the program have
+    jumpList = []
 
-        instructionNumber = instructionNumber + 1  # Increasing number of instruction aux variable
-        instruction = Instruction(False, False, False, False, False, False)  # Initialize a instruction
+    for line in file:
+        line = line.rstrip()
+        if not ':' in line:  # Select just the instructions
 
-        name = line.split().__getitem__(
-            0)  # Separate every word from a unique line, and get '0' position, which is name of instruction
+            instructionNumber = instructionNumber + 1  # Increasing number of instruction aux variable
+            instruction = Instruction(False, False, False, False, False, False)  # Initialize a instruction
 
-        instruction.setNumber(instructionNumber)  # Setting number of the instruction
-        instruction.setName(name)  # Setting name of instruction
-        instruction.setLine(lineInFile)  # Setting line number of this instruction in file
+            name = line.split().__getitem__(
+                0)  # Separate every word from a unique line, and get '0' position, which is name of instruction
 
-        if name == 'jmp' or name == 'je' or name == 'jne' or name == 'jg' or name == 'jge' or name == 'jl' or name == 'jle':  # If name is a deviation Instruction so...
-            jumpName = line.split().__getitem__(1)  # Get the second word from this line, and here is the name of a group of instructions
-            instruction.setJumpName(jumpName)  # Setting deviation group name in a JUMP instruction
+            instruction.setNumber(instructionNumber)  # Setting number of the instruction
+            instruction.setName(name)  # Setting name of instruction
+            instruction.setLine(lineInFile)  # Setting line number of this instruction in file
 
-            # Choose if program will real deviate or not
-            # isDeviate = randint(0, 1)
-            # if isDeviate == 0:
-            #     isDeviate = False
-            # else:
-            #     isDeviate= True
-            if name == "jmp":
-                instruction.setIsDeviate(True)
+            if name == 'jmp' or name == 'je' or name == 'jne' or name == 'jg' or name == 'jge' or name == 'jl' or name == 'jle':  # If name is a deviation Instruction so...
+                jumpName = line.split().__getitem__(1)  # Get the second word from this line, and here is the name of a group of instructions
+                instruction.setJumpName(jumpName)  # Setting deviation group name in a JUMP instruction
+
+                if name == "jmp":
+                    instruction.setIsDeviate(True)
+                else:
+                    instruction.setIsDeviate(False)
+
+                # Setting some attributes.
             else:
-                instruction.setIsDeviate(False)
+                operation_1 = line.split().__getitem__(1)
+                operation_1 = operation_1.replace(",","")
+                operation_2 = line.split().__getitem__(2)
+                if not ";" in operation_1:
+                    instruction.setJumpName(operation_1)  # Setting operator 1. (Second column)
+                if not ";" in operation_2:
+                    instruction.setJumpLine(operation_2)  # Maybe it doesn't exist (Third column)
+                if instruction.getName() == "ret" or instruction.getName() == "leave":
+                    instruction.setJumpLine(False)
+                    instruction.setJumpName(False)
+                instruction.setIsDeviate(False) # Means no deviation
 
-            # Setting some attributes.
+            instructionList.append(instruction)  # Appending one element on a list of instructions
+
+            lineInFile = lineInFile + 1
+
         else:
-            operation_1 = line.split().__getitem__(1)
-            operation_1 = operation_1.replace(",","")
-            operation_2 = line.split().__getitem__(2)
-            if not ";" in operation_1:
-                instruction.setJumpName(operation_1)  # Setting operator 1. (Second column)
-            if not ";" in operation_2:
-                instruction.setJumpLine(operation_2)  # Maybe it doesn't exist (Third column)
-            if instruction.getName() == "ret" or instruction.getName() == "leave":
-                instruction.setJumpLine(False)
-                instruction.setJumpName(False)
-            instruction.setIsDeviate(False) # Means no deviation
+            if not '_' in line:  # Here is the lines that countains the name of a group of instruction from a deviation
+                groupCounter = groupCounter + 1
+                jump = Instruction(False, False, False, False, False, False)  # Iniatialize the object jump
 
-        instructionList.append(instruction)  # Appending one element on a list of instructions
+                name = line.replace(':', "")  # Erasing ":" from this line
 
-        lineInFile = lineInFile + 1
+                jump.setName(name)  # Setting name in this object
+                jump.setLine(lineInFile - groupCounter + 1)  # Setting the instruction number that deviate will jump
+                jumpList.append(jump)  # Appending one element on a list of group instruction names
 
-    else:
-        if not '_' in line:  # Here is the lines that countains the name of a group of instruction from a deviation
-            groupCounter = groupCounter + 1
-            jump = Instruction(False, False, False, False, False, False)  # Iniatialize the object jump
+            lineInFile = lineInFile + 1
 
-            name = line.replace(':', "")  # Erasing ":" from this line
+    os.system('cls' if os.name == 'nt' else 'clear') # Clearing console
 
-            jump.setName(name)  # Setting name in this object
-            jump.setLine(lineInFile - groupCounter + 1)  # Setting the instruction number that deviate will jump
-            jumpList.append(jump)  # Appending one element on a list of group instruction names
+    # Lines from 48 to 57, is to set "JumpLine" in "Jump" instructions,
+    # JumpLine: Line which the program is going to jump deppending on the instruction.
+    for i in range(len(instructionList)):
+        name = instructionList[i].getName()
+        jumpName = ""
 
-        lineInFile = lineInFile + 1
+        if name == 'jmp' or name == 'je' or name == 'jne' or name == 'jg' or name == 'jge' or name == 'jl' or name == 'jle':
+            jumpName = instructionList[i].getJumpName()
 
-os.system('cls' if os.name == 'nt' else 'clear') # Clearing console
+            for j in range(len(jumpList)):
+                if jumpName == jumpList[j].getName():
+                    instructionList[i].setJumpLine(jumpList[j].getLine())
+    file.close()
+    return instructionList
 
-# Lines from 48 to 57, is to set "JumpLine" in "Jump" instructions,
-# JumpLine: Line which the program is going to jump deppending on the instruction.
-for i in range(len(instructionList)):
-    name = instructionList[i].getName()
-    jumpName = ""
-
-    if name == 'jmp' or name == 'je' or name == 'jne' or name == 'jg' or name == 'jge' or name == 'jl' or name == 'jle':
-        jumpName = instructionList[i].getJumpName()
-
-        for j in range(len(jumpList)):
-            if jumpName == jumpList[j].getName():
-                instructionList[i].setJumpLine(jumpList[j].getLine())
-
-    print(instructionList[i].getName(), instructionList[i].getNumber(), instructionList[i].getJumpName(),
-          instructionList[i].getJumpLine(), instructionList[i].getIsDeviate())
-
-print("Number of instructions found: ", instructionNumber)
-file.close()
-
-flag_aux = 1
-
-id = np.zeros((1, 100))
-pc = 0
-count = 0
-clock = 0
-lenght = 0
+def printInstructionList(instructionList):
+    print("------------------------------------")
+    print ("INSTRUCTIONS: ")
+    for i in range(len(instructionList)):
+        print(instructionList[i].getNumber(), instructionList[i].getName(), instructionList[i].getJumpName(),
+              instructionList[i].getJumpLine())
+    print("------------------------------------")
 
 def renderPipeline(pipeline, lenght, clock, completedInstructions):
-
     for i in range(40):
         print("-", end=" ")  # display "------"
     print()  # move cursor down to next line
@@ -392,11 +374,11 @@ def renderPipeline(pipeline, lenght, clock, completedInstructions):
     print("CLK", clock)  # display variable clock
     print()  # move cursor down to next line
 
-    for i in range(lenght+1):  # for i to lenght
+    for i in range(lenght + 1):  # for i to lenght
         print()  # move cursor down to next line
         print(i + 1, "| ", end=" ")
         print("instruction", id[0][i], "\t", end=" ")  # display pipeline steps
-        for j in range(clock+1):
+        for j in range(clock + 1):
             if pipeline[i][j] == 1:
                 print(" FI ", end=" ")
             elif pipeline[i][j] == 2:
@@ -419,12 +401,12 @@ def renderPipeline(pipeline, lenght, clock, completedInstructions):
         print("-", end=" ")  # display "------"
     print()
 
-def buildPipeline(pipeline, lenght, clock, completedInstructions):
-    global flag_aux # to modify global variable
+def buildPipeline(pipeline, lenght, clock, completedInstructions, instructionList):
+    global flag_aux  # to modify global variable
     global pc
     global count
-    if id[0][count - 1] < 15:
-        id[0][count] = id[0][count-1] + 1
+    if id[0][count - 1] < len(instructionList) + 1:
+        id[0][count] = id[0][count - 1] + 1
         pipeline[lenght][clock] = 1  # set 1 on the diagonal of the matrix
         count += 1
 
@@ -439,40 +421,68 @@ def buildPipeline(pipeline, lenght, clock, completedInstructions):
 
                 pc = pc + 1
                 aux = pc
-                pc = readInstruction(pc-1, instructionList)
+                pc = readInstruction(pc - 1, instructionList)
                 if (aux != pc):
                     id[0][count - 1] = pc + 1
                     break
-
     return completedInstructions  # return number of instruction witch had already been read
 
-#  inicialization of variables
+
+#------------------------------------------Program starts here----------------------------------------------------------
+#  Initializing variables
+clock = 0
+lenght = 0
 option = '1'
 completedInstructions = 0
-pipeline = np.zeros((200, 200))
+pipeline = np.zeros((500, 500))
 endProgram = False
+#List of assembly instructions
+instructionList = []
+
+#Open assembly file
+flag = False
+while(not flag):
+    os.system('cls' if os.name == 'nt' else 'clear') # Clearing console
+    directory = input('Name of file in directory "Files": ')
+    directory = 'Files/' + directory
+    if os.path.exists(directory):
+        file = open(directory, 'r')
+        flag = True
+    else:
+        print("File doesn't exist, try again...")
+
+# Getting sum number
+flag = False
+while(flag == False):
+    esp = input('Type number for the sum (1 to 5): ')
+    if int(esp) <= 5 and int(esp) >= 1:
+        flag = True
+
+ # This function creates a list of instructions based on assembly file.
+instructionList = readFile(file, instructionList)
+
+printInstructionList(instructionList)
 
 # run while input != "0"
 print('Type any key to proceed and 0 to exit!')
 while option != '0':
     #  call function to build the pipeline
-    completedInstructions = buildPipeline(pipeline, lenght, clock, completedInstructions)
+    completedInstructions = buildPipeline(pipeline, lenght, clock, completedInstructions, instructionList)
 
     # verify if next instruction == endProgram(ret)
     if pc == -2:
-        pipeline[lenght, :] = np.zeros((1, 200))
+        pipeline[lenght, :] = np.zeros((1, 500))
         renderPipeline(pipeline, lenght, clock, completedInstructions)
         break
     #  call function to render the pipeline
     if id[0][count-1] != 15:
         renderPipeline(pipeline, lenght, clock, completedInstructions)
     else:
-        pipeline[lenght, :] = np.zeros((1, 200))
+        pipeline[lenght, :] = np.zeros((1, 500))
         pipeline[lenght][clock+1] = 1
         renderPipeline(pipeline, lenght-1, clock, completedInstructions)
 
     clock += 1
     if id[0][count-1] < 15:
         lenght += 1
-
     option = input()
