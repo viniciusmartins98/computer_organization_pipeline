@@ -6,7 +6,7 @@ import numpy as np
 
 # Registers
 ebp = 0
-esp = 3
+esp = 2
 temp = 0
 temp2 = 0
 eax = 0
@@ -62,7 +62,7 @@ def readInstruction(pc, instructionList):
 
 
     if name == "ret":
-        return -5
+        return -2
     elif name == "jmp":
         return instructionList[pc].getJumpLine() - 1
 
@@ -377,19 +377,25 @@ file.close()
 flag_aux = 1
 
 id = np.zeros((1, 100))
+pc = 0
+count = 0
+clock = 0
+lenght = 0
 
 def renderPipeline(pipeline, lenght, clock, completedInstructions):
 
     for i in range(40):
         print("-", end=" ")  # display "------"
     print()  # move cursor down to next line
+    printRegisters()
+    print()  # move cursor down to next line
     print("CLK", clock)  # display variable clock
     print()  # move cursor down to next line
 
     for i in range(lenght+1):  # for i to lenght
         print()  # move cursor down to next line
-        # print("instruction", pc[0][i], "\t", end=" ")  # display pipeline steps
-        print(id[0][i], end=" ")
+        print(i + 1, "| ", end=" ")
+        print("instruction", id[0][i], "\t", end=" ")  # display pipeline steps
         for j in range(clock+1):
             if pipeline[i][j] == 1:
                 print(" FI ", end=" ")
@@ -412,20 +418,19 @@ def renderPipeline(pipeline, lenght, clock, completedInstructions):
     for i in range(40):
         print("-", end=" ")  # display "------"
     print()
-    printRegisters()
 
-pc = 0
-count = 0
 def buildPipeline(pipeline, lenght, clock, completedInstructions):
     global flag_aux # to modify global variable
     global pc
     global count
+    if id[0][count - 1] < 15:
+        id[0][count] = id[0][count-1] + 1
+        pipeline[lenght][clock] = 1  # set 1 on the diagonal of the matrix
+        count += 1
 
-    id[0][count] = count + 1
-    count += 1
-    pipeline[lenght][clock] = 1  # set 1 on the diagonal of the matrix
     if clock != 0:
         for i in range(lenght):
+
             if pipeline[i][clock - 1] != 0:
                 pipeline[i][clock] = pipeline[i][clock - 1] + 1  # increment value of the last column
 
@@ -435,37 +440,39 @@ def buildPipeline(pipeline, lenght, clock, completedInstructions):
                 pc = pc + 1
                 aux = pc
                 pc = readInstruction(pc-1, instructionList)
-                print('PC', pc)
-                print('AUX', aux)
                 if (aux != pc):
-                    id[0][count - 1] = pc
-                    count = pc
+                    id[0][count - 1] = pc + 1
                     break
 
     return completedInstructions  # return number of instruction witch had already been read
 
 #  inicialization of variables
-clock = 0
-lenght = 0
 option = '1'
 completedInstructions = 0
-pipeline = np.zeros((100, 100))
+pipeline = np.zeros((200, 200))
 endProgram = False
 
 # run while input != "0"
 print('Type any key to proceed and 0 to exit!')
 while option != '0':
-
-    #  call functions to build and render the pipeline
+    #  call function to build the pipeline
     completedInstructions = buildPipeline(pipeline, lenght, clock, completedInstructions)
-    # verify if next instruction != NULL
-    if pc == -5:
-        endProgram = True
-        break
-    renderPipeline(pipeline, lenght, clock, completedInstructions)
-    clock += 1
 
-    if not endProgram: #if endProgram != 1:
+    # verify if next instruction == endProgram(ret)
+    if pc == -2:
+        pipeline[lenght, :] = np.zeros((1, 200))
+        renderPipeline(pipeline, lenght, clock, completedInstructions)
+        break
+    #  call function to render the pipeline
+    if id[0][count-1] != 15:
+        renderPipeline(pipeline, lenght, clock, completedInstructions)
+    else:
+        pipeline[lenght, :] = np.zeros((1, 200))
+        pipeline[lenght][clock+1] = 1
+        renderPipeline(pipeline, lenght-1, clock, completedInstructions)
+
+    clock += 1
+    if id[0][count-1] < 15:
         lenght += 1
 
     option = input()
