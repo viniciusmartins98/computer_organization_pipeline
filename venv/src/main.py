@@ -405,7 +405,7 @@ def buildPipeline(pipeline, lenght, clock, completedInstructions, instructionLis
     global flag_aux  # to modify global variable
     global pc
     global count
-    if id[0][count - 1] < len(instructionList) + 1:
+    if id[0][count - 1] < len(instructionList)+1:
         id[0][count] = id[0][count - 1] + 1
         pipeline[lenght][clock] = 1  # set 1 on the diagonal of the matrix
         count += 1
@@ -425,6 +425,7 @@ def buildPipeline(pipeline, lenght, clock, completedInstructions, instructionLis
                 if (aux != pc):
                     id[0][count - 1] = pc + 1
                     break
+
     return completedInstructions  # return number of instruction witch had already been read
 
 
@@ -475,7 +476,7 @@ while option != '0':
         renderPipeline(pipeline, lenght, clock, completedInstructions)
         break
     #  call function to render the pipeline
-    if id[0][count-1] != 15:
+    if id[0][count-1] != len(instructionList)+1:
         renderPipeline(pipeline, lenght, clock, completedInstructions)
     else:
         pipeline[lenght, :] = np.zeros((1, 500))
@@ -483,6 +484,6 @@ while option != '0':
         renderPipeline(pipeline, lenght-1, clock, completedInstructions)
 
     clock += 1
-    if id[0][count-1] < 15:
+    if id[0][count-1] < len(instructionList)+1:
         lenght += 1
     option = input()
