@@ -43,7 +43,6 @@ def executeIncl(op1):
 
 def executeCmpl(op1, op2):
     op1 = int(op1) - int(op2)
-    print("OP CMP: ", op1)
     return op1
 
 def executeJle(op1):
