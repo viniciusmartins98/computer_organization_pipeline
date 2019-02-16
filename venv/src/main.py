@@ -367,7 +367,7 @@ def renderPipeline(pipeline, lenght, clock, completedInstructions, instructionLi
     for i in range(40):
         print("-", end=" ")  # display "------"
     print()  # move cursor down to next line
-    print("SOMATORIO: ")
+    print("  SOMATORIO  ")
     print("DADO DE ENTRADA: ", iNum)
     printInstructionList(instructionList)
     printRegisters()
