@@ -3,6 +3,7 @@ from random import randint
 import os.path
 import os
 import numpy as np
+import string
 
 #Global variables:
 # Registers
@@ -373,7 +374,9 @@ def renderPipeline(pipeline, lenght, clock, completedInstructions, instructionLi
     print()  # move cursor down to next line
     print("CLK", clock)  # display variable clock
     print()  # move cursor down to next line
-
+    print("CLK\t\t\t\t\t  ", end=" ")
+    for i in range(clock+1):
+        print("{:4d}".format(i), end=" ")
     for i in range(lenght + 1):  # for i to lenght
         print()  # move cursor down to next line
         print(i + 1, "| ", end=" ")
