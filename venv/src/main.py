@@ -17,9 +17,7 @@ aux_operator = 0
 
 flag_aux = 1
 
-id = np.zeros((1, 100))
-
-# List of all assembly instructions (Created by readFile function)
+id = np.zeros((1, 500))
 
 pc = 0 # Program counter
 count = 0
@@ -66,19 +64,19 @@ def readInstruction(pc, instructionList):
     name = instructionList[pc].getName()
 
     #mvl instruction
-    operator_1 = instructionList[pc].getJumpName()
-    operator_2 = instructionList[pc].getJumpLine()
+    operator_1 = instructionList[pc].getOP1()
+    operator_2 = instructionList[pc].getOP2()
 
 
     if name == "ret":
         return -2
     elif name == "jmp":
-        return instructionList[pc].getJumpLine() - 1
+        return instructionList[pc].getOP2() - 1
 
     elif name == "jle":
         instructionList[pc].setIsDeviate(executeJle(aux_operator))  # Setting if will have deviation or not.
         if instructionList[pc].getIsDeviate():
-            return instructionList[pc].getJumpLine() - 1
+            return instructionList[pc].getOP2() - 1
 
     #Verifies if it's a direct attribution
     if operator_2 != "ebp" and operator_2 != "esp" and operator_2 != "temp" \
@@ -302,7 +300,7 @@ def readFile(file, instructionList):
 
             if name == 'jmp' or name == 'je' or name == 'jne' or name == 'jg' or name == 'jge' or name == 'jl' or name == 'jle':  # If name is a deviation Instruction so...
                 jumpName = line.split().__getitem__(1)  # Get the second word from this line, and here is the name of a group of instructions
-                instruction.setJumpName(jumpName)  # Setting deviation group name in a JUMP instruction
+                instruction.setOP1(jumpName)  # Setting deviation group name in a JUMP instruction
 
                 if name == "jmp":
                     instruction.setIsDeviate(True)
@@ -315,12 +313,12 @@ def readFile(file, instructionList):
                 operation_1 = operation_1.replace(",","")
                 operation_2 = line.split().__getitem__(2)
                 if not ";" in operation_1:
-                    instruction.setJumpName(operation_1)  # Setting operator 1. (Second column)
+                    instruction.setOP1(operation_1)  # Setting operator 1. (Second column)
                 if not ";" in operation_2:
-                    instruction.setJumpLine(operation_2)  # Maybe it doesn't exist (Third column)
+                    instruction.setOP2(operation_2)  # Maybe it doesn't exist (Third column)
                 if instruction.getName() == "ret" or instruction.getName() == "leave":
-                    instruction.setJumpLine(False)
-                    instruction.setJumpName(False)
+                    instruction.setOP2(False)
+                    instruction.setOP1(False)
                 instruction.setIsDeviate(False) # Means no deviation
 
             instructionList.append(instruction)  # Appending one element on a list of instructions
@@ -349,11 +347,11 @@ def readFile(file, instructionList):
         jumpName = ""
 
         if name == 'jmp' or name == 'je' or name == 'jne' or name == 'jg' or name == 'jge' or name == 'jl' or name == 'jle':
-            jumpName = instructionList[i].getJumpName()
+            jumpName = instructionList[i].getOP1()
 
             for j in range(len(jumpList)):
                 if jumpName == jumpList[j].getName():
-                    instructionList[i].setJumpLine(jumpList[j].getLine())
+                    instructionList[i].setOP2(jumpList[j].getLine())
     file.close()
     return instructionList
 
@@ -361,14 +359,17 @@ def printInstructionList(instructionList):
     print("------------------------------------")
     print ("INSTRUCTIONS: ")
     for i in range(len(instructionList)):
-        print(instructionList[i].getNumber(), instructionList[i].getName(), instructionList[i].getJumpName(),
-              instructionList[i].getJumpLine())
+        print(instructionList[i].getNumber(), instructionList[i].getName(), instructionList[i].getOP1(),
+              instructionList[i].getOP2())
     print("------------------------------------")
 
-def renderPipeline(pipeline, lenght, clock, completedInstructions):
+def renderPipeline(pipeline, lenght, clock, completedInstructions, instructionList, iNum):
     for i in range(40):
         print("-", end=" ")  # display "------"
     print()  # move cursor down to next line
+    print("SOMATORIO: ")
+    print("DADO DE ENTRADA: ", iNum)
+    printInstructionList(instructionList)
     printRegisters()
     print()  # move cursor down to next line
     print("CLK", clock)  # display variable clock
@@ -455,9 +456,10 @@ while(not flag):
 # Getting sum number
 flag = False
 while(flag == False):
-    esp = input('Type number for the sum (1 to 5): ')
-    if int(esp) <= 5 and int(esp) >= 1:
+    iNum = input('Type number for the sum (1 to 5): ')
+    if int(iNum) <= 5 and int(iNum) >= 1:
         flag = True
+esp = iNum
 
  # This function creates a list of instructions based on assembly file.
 instructionList = readFile(file, instructionList)
@@ -472,16 +474,19 @@ while option != '0':
 
     # verify if next instruction == endProgram(ret)
     if pc == -2:
+        os.system('cls' if os.name == 'nt' else 'clear')
         pipeline[lenght, :] = np.zeros((1, 500))
-        renderPipeline(pipeline, lenght, clock, completedInstructions)
+        renderPipeline(pipeline, lenght, clock, completedInstructions, instructionList, iNum)
         break
     #  call function to render the pipeline
     if id[0][count-1] != len(instructionList)+1:
-        renderPipeline(pipeline, lenght, clock, completedInstructions)
+        os.system('cls' if os.name == 'nt' else 'clear')
+        renderPipeline(pipeline, lenght, clock, completedInstructions, instructionList, iNum)
     else:
         pipeline[lenght, :] = np.zeros((1, 500))
         pipeline[lenght][clock+1] = 1
-        renderPipeline(pipeline, lenght-1, clock, completedInstructions)
+        os.system('cls' if os.name == 'nt' else 'clear')
+        renderPipeline(pipeline, lenght-1, clock, completedInstructions, instructionList, iNum)
 
     clock += 1
     if id[0][count-1] < len(instructionList)+1:
