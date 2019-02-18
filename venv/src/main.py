@@ -18,9 +18,13 @@ aux_operator = 0
 
 flag_aux = 1
 
+# Store id of instruction
 id = np.zeros((1, 500))
 
-pc = 0 # Program counter
+# Program counter
+pc = 0
+
+#
 count = 0
 
 def printRegisters():
@@ -30,7 +34,7 @@ def printRegisters():
     print("TEMP2: ", temp2)
     print("EAX: ", eax)
 
-def executeMvi(op1, op2):
+def executeMovl(op1, op2):
     op1 = int(op2)
     return op1
 
@@ -58,53 +62,53 @@ def executeLeave():
 def executeRet():
     return "Encerrando programa."
 
+# This is going to read and execute the assembly instructions. It always the address for the next instruction
 def readInstruction(pc, instructionList):
-    global ebp, esp, temp, temp2, eax, aux_operator
+    global ebp, esp, temp, temp2, eax, aux_operator # Registers
 
-    name = instructionList[pc].getName()
+    name = instructionList[pc].getName() # Name of instruction
 
-    #mvl instruction
-    operator_1 = instructionList[pc].getOP1()
-    operator_2 = instructionList[pc].getOP2()
+    operator_1 = instructionList[pc].getOP1() # First operator
+    operator_2 = instructionList[pc].getOP2() # Second operator
 
 
-    if name == "ret":
+    if name == "ret": # "Execute" instruction ret
         return -2
-    elif name == "jmp":
+    elif name == "jmp": # "Execute" function jmp.
         return instructionList[pc].getOP2() - 1
 
-    elif name == "jle":
+    elif name == "jle": # "Execute" function jle.
         instructionList[pc].setIsDeviate(executeJle(aux_operator))  # Setting if will have deviation or not.
         if instructionList[pc].getIsDeviate():
             return instructionList[pc].getOP2() - 1
 
-    #Verifies if it's a direct attribution
+    #Veirifyes if the instructions have direct values, for example: "movl temp 0".
     if operator_2 != "ebp" and operator_2 != "esp" and operator_2 != "temp" \
             and operator_2 != "temp2" and operator_2 != "eax" and operator_2 != False:
         if operator_1 == "ebp":
             if name == "movl":
-                ebp = executeMvi(ebp, operator_2)
+                ebp = executeMovl(ebp, operator_2)
             elif name == "addl":
                 ebp = executeAddl(ebp, operator_2)
             elif name == "cmpl":
                 aux_operator = executeCmpl(ebp, operator_2)
         elif operator_1 == "esp":
             if name == "movl":
-                esp = executeMvi(esp, operator_2)
+                esp = executeMovl(esp, operator_2)
             elif name == "addl":
                 esp = executeAddl(esp, operator_2)
             elif name == "cmpl":
                 aux_operator = executeCmpl(esp, operator_2)
         elif operator_1 == "temp":
             if name == "movl":
-                temp = executeMvi(temp, operator_2)
+                temp = executeMovl(temp, operator_2)
             elif name == "addl":
                 temp = executeAddl(temp, operator_2)
             elif name == "cmpl":
                 aux_operator = executeCmpl(temp, operator_2)
         elif operator_1 == "temp2":
             if name == "movl":
-                temp2 = executeMvi(temp2, operator_2)
+                temp2 = executeMovl(temp2, operator_2)
             elif name == "addl":
                 temp2 = executeAddl(temp2, operator_2)
             elif name == "cmpl":
@@ -112,40 +116,40 @@ def readInstruction(pc, instructionList):
                 aux_operator = temp2
         elif operator_1 == "eax":
             if name == "movl":
-                eax = executeMvi(eax, operator_2)
+                eax = executeMovl(eax, operator_2)
             elif name == "addl":
                 eax = executeAddl(eax, operator_2)
             elif name == "cmpl":
                 aux_operator = executeCmpl(eax, operator_2)
 
-    # Attribution made by other register
+    # Instructions that don't have direct values. This will execute most of instructions.
     elif operator_1 == "ebp":
         if name == "incl":
             ebp = executeIncl(ebp)
         elif operator_2 == "esp":
             if name == "movl":
-                ebp = executeMvi(ebp, esp)
+                ebp = executeMovl(ebp, esp)
             elif name == "addl":
                 ebp = executeAddl(ebp, esp)
             elif name == "cmpl":
                 aux_operator = executeCmpl(ebp, esp)
         elif operator_2 == "temp":
             if name == "movl":
-                ebp = executeMvi(ebp, temp)
+                ebp = executeMovl(ebp, temp)
             elif name == "addl":
                 ebp = executeAddl(ebp, temp)
             elif name == "cmpl":
                 aux_operator = executeCmpl(ebp, temp)
         elif operator_2 == "temp2":
             if name == "movl":
-                ebp = executeMvi(ebp, temp)
+                ebp = executeMovl(ebp, temp)
             elif name == "addl":
                 ebp = executeAddl(ebp, temp)
             elif name == "cmpl":
                 aux_operator = executeCmpl(ebp, temp)
         elif operator_2 == "eax":
             if name == "movl":
-                ebp = executeMvi(ebp, eax)
+                ebp = executeMovl(ebp, eax)
             elif name == "addl":
                 ebp = executeAddl(ebp, eax)
             elif name == "cmpl":
@@ -156,28 +160,28 @@ def readInstruction(pc, instructionList):
             esp = executeIncl(esp)
         elif operator_2 == "ebp":
             if name == "movl":
-                esp = executeMvi(esp, ebp)
+                esp = executeMovl(esp, ebp)
             elif name == "addl":
                 esp = executeAddl(esp, ebp)
             elif name == "cmpl":
                 aux_operator = executeCmpl(esp, ebp)
         elif operator_2 == "temp":
             if name == "movl":
-                esp = executeMvi(esp, temp)
+                esp = executeMovl(esp, temp)
             elif name == "addl":
                 esp = executeAddl(esp, temp)
             elif name == "cmpl":
                 aux_operator = executeCmpl(esp, temp)
         elif operator_2 == "temp2":
             if name == "movl":
-                esp = executeMvi(esp, temp2)
+                esp = executeMovl(esp, temp2)
             elif name == "addl":
                 esp = executeAddl(esp, temp2)
             elif name == "cmpl":
                 aux_operator = executeCmpl(esx, temp2)
         elif operator_2 == "eax":
             if name == "movl":
-                esp = executeMvi(esp, eax)
+                esp = executeMovl(esp, eax)
             elif name == "addl":
                 esp = executeAddl(esp, eax)
             elif name == "cmpl":
@@ -187,28 +191,28 @@ def readInstruction(pc, instructionList):
             temp = executeIncl(temp)
         elif operator_2 == "esp":
             if name == "movl":
-                temp = executeMvi(temp, esp)
+                temp = executeMovl(temp, esp)
             elif name == "addl":
                 temp = executeAddl(temp, esp)
             elif name == "cmpl":
                 aux_operator = executeCmpl(temp, esp)
         elif operator_2 == "ebp":
             if name == "movl":
-                temp = executeMvi(temp, ebp)
+                temp = executeMovl(temp, ebp)
             elif name == "addl":
                 temp = executeAddl(temp, ebp)
             elif name == "cmpl":
                 aux_operator = executeCmpl(temp, ebp)
         elif operator_2 == "temp2":
             if name == "movl":
-                temp = executeMvi(temp, temp2)
+                temp = executeMovl(temp, temp2)
             elif name == "addl":
                 temp = executeAddl(temp, temp2)
             elif name == "cmpl":
                 aux_operator = executeCmpl(temp, temp2)
         elif operator_2 == "eax":
             if name == "movl":
-                temp = executeMvi(temp, eax)
+                temp = executeMovl(temp, eax)
             elif name == "addl":
                 temp = executeAddl(temp, eax)
             elif name == "cmpl":
@@ -218,28 +222,28 @@ def readInstruction(pc, instructionList):
             temp2 = executeIncl(temp2)
         elif operator_2 == "esp":
             if name == "movl":
-                temp2 = executeMvi(temp2, esp)
+                temp2 = executeMovl(temp2, esp)
             elif name == "addl":
                 temp2 = executeAddl(temp2, esp)
             elif name == "cmpl":
                 aux_operator = executeCmpl(temp2, esp)
         elif operator_2 == "ebp":
             if name == "movl":
-                temp2 = executeMvi(temp2, ebp)
+                temp2 = executeMovl(temp2, ebp)
             elif name == "addl":
                 temp2 = executeAddl(temp2, ebp)
             elif name == "cmpl":
                 aux_operator = executeCmpl(temp2, ebp)
         elif operator_2 == "temp":
             if name == "movl":
-                temp2 = executeMvi(temp2, temp)
+                temp2 = executeMovl(temp2, temp)
             elif name == "addl":
                 temp2 = executeAddl(temp2, temp)
             elif name == "cmpl":
                 aux_operator = executeCmpl(temp2, temp)
         elif operator_2 == "eax":
             if name == "movl":
-                temp2 = executeMvi(temp2, eax)
+                temp2 = executeMovl(temp2, eax)
             elif name == "addl":
                 temp2 = executeAddl(temp2, eax)
             elif name == "cmpl":
@@ -249,50 +253,49 @@ def readInstruction(pc, instructionList):
             eax = executeIncl(eax)
         elif operator_2 == "esp":
             if name == "movl":
-                eax = executeMvi(eax, esp)
+                eax = executeMovl(eax, esp)
             elif name == "addl":
                 eax = executeAddl(eax, esp)
             elif name == "cmpl":
                 aux_operator = executeCmpl(eax, esp)
         elif operator_2 == "ebp":
             if name == "movl":
-                eax = executeMvi(eax, ebp)
+                eax = executeMovl(eax, ebp)
             elif name == "addl":
                 eax = executeAddl(eax, ebp)
             elif name == "cmpl":
                 aux_operator = executeCmpl(eax, ebp)
         elif operator_2 == "temp":
             if name == "movl":
-                eax = executeMvi(eax, temp)
+                eax = executeMovl(eax, temp)
             elif name == "addl":
                 eax = executeAddl(eax, temp)
             elif name == "cmpl":
                 aux_operator = executeCmpl(eax, temp)
         elif operator_2 == "temp2":
             if name == "movl":
-                eax = executeMvi(eax, temp2)
+                eax = executeMovl(eax, temp2)
             elif name == "addl":
                 eax = executeAddl(eax, temp2)
             elif name == "cmpl":
                 aux_operator = executeCmpl(eax, temp2)
     return pc + 1
 
-# Run all file lines
+# This function will read the assembly file and build a list of all instructions, ordered by line, with all their information.
 def readFile(file, instructionList):
-    instructionNumber = 0
-    lineInFile = 0
+    instructionNumber = 0 # Instruction number depending on the line that it is.
+    lineInFile = 0 # Line that the instruction is in file
     groupCounter = 0  # Count how many groups of instructions the program have
-    jumpList = []
+    jumpList = [] # Aux list that will contain all jump instructions.
 
-    for line in file:
-        line = line.rstrip()
-        if not ':' in line:  # Select just the instructions
+    for line in file: # Run line by line in file
+        line = line.rstrip() # Copies line in file for the variable "line"
+        if not ':' in line:  # Select just the instructions, because instructions don't have ":" in their names.
 
             instructionNumber = instructionNumber + 1  # Increasing number of instruction aux variable
-            instruction = Instruction(False, False, False, False, False, False)  # Initialize a instruction
+            instruction = Instruction(False, False, False, False, False, False)  # Initialize a instruction object.
 
-            name = line.split().__getitem__(
-                0)  # Separate every word from a unique line, and get '0' position, which is name of instruction
+            name = line.split().__getitem__(0) # Separate every word from a unique line, and get '0' position, which is the name of instruction
 
             instruction.setNumber(instructionNumber)  # Setting number of the instruction
             instruction.setName(name)  # Setting name of instruction
@@ -302,30 +305,29 @@ def readFile(file, instructionList):
                 jumpName = line.split().__getitem__(1)  # Get the second word from this line, and here is the name of a group of instructions
                 instruction.setOP1(jumpName)  # Setting deviation group name in a JUMP instruction
 
-                if name == "jmp":
+                if name == "jmp": # Instruction "jmp" will always deviate.
                     instruction.setIsDeviate(True)
                 else:
                     instruction.setIsDeviate(False)
 
-                # Setting some attributes.
-            else:
-                operation_1 = line.split().__getitem__(1)
+            else: # Is not a deviation instruction.
+                operation_1 = line.split().__getitem__(1) # Getting first operator
                 operation_1 = operation_1.replace(",","")
-                operation_2 = line.split().__getitem__(2)
-                if not ";" in operation_1:
+                operation_2 = line.split().__getitem__(2) # Getting second operator
+                if not ";" in operation_1: # ";" means that is a "comment"
                     instruction.setOP1(operation_1)  # Setting operator 1. (Second column)
                 if not ";" in operation_2:
-                    instruction.setOP2(operation_2)  # Maybe it doesn't exist (Third column)
-                if instruction.getName() == "ret" or instruction.getName() == "leave":
-                    instruction.setOP2(False)
-                    instruction.setOP1(False)
+                    instruction.setOP2(operation_2)  # Setting operator 2. Maybe it doesn't exist (Third column)
+                if instruction.getName() == "ret" or instruction.getName() == "leave": # Instructions that have no operators.
+                    instruction.setOP1(False) # Setting false in OP1 means that have no operator
+                    instruction.setOP2(False) # Setting false in OP2 means that have no operator
                 instruction.setIsDeviate(False) # Means no deviation
 
-            instructionList.append(instruction)  # Appending one element on a list of instructions
+            instructionList.append(instruction)  # Appending one element on a list of instructions.
 
-            lineInFile = lineInFile + 1
+            lineInFile = lineInFile + 1 # Increment line in file.
 
-        else:
+        else: # Here will get just de grouo of instructions names.
             if not '_' in line:  # Here is the lines that countains the name of a group of instruction from a deviation
                 groupCounter = groupCounter + 1
                 jump = Instruction(False, False, False, False, False, False)  # Iniatialize the object jump
@@ -341,7 +343,7 @@ def readFile(file, instructionList):
     os.system('cls' if os.name == 'nt' else 'clear') # Clearing console
 
     # Lines from 48 to 57, is to set "JumpLine" in "Jump" instructions,
-    # JumpLine: Line which the program is going to jump deppending on the instruction.
+    # JumpLine: Line which the program is going to jump.
     for i in range(len(instructionList)):
         name = instructionList[i].getName()
         jumpName = ""
@@ -349,10 +351,10 @@ def readFile(file, instructionList):
         if name == 'jmp' or name == 'je' or name == 'jne' or name == 'jg' or name == 'jge' or name == 'jl' or name == 'jle':
             jumpName = instructionList[i].getOP1()
 
-            for j in range(len(jumpList)):
-                if jumpName == jumpList[j].getName():
-                    instructionList[i].setOP2(jumpList[j].getLine())
-    file.close()
+            for j in range(len(jumpList)): # Runs the jumpList list.
+                if jumpName == jumpList[j].getName(): # Find the instruction that have to jump.
+                    instructionList[i].setOP2(jumpList[j].getLine()) # Setting the number of instruction that the jump instruction have to jump.
+    file.close() # Close file
     return instructionList
 
 def printInstructionList(instructionList):
@@ -461,7 +463,9 @@ while(flag == False):
     iNum = input('Type number for the sum (1 to 5): ')
     if int(iNum) <= 5 and int(iNum) >= 1:
         flag = True
-esp = iNum
+esp = iNum # Initializing a value to the program.
+
+# iNum is the value of the input.
 
  # This function creates a list of instructions based on assembly file.
 instructionList = readFile(file, instructionList)
