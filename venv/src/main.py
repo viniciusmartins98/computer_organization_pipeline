@@ -365,7 +365,7 @@ def printInstructionList(instructionList):
               instructionList[i].getOP2())
     print("------------------------------------")
 
-def renderPipeline(pipeline, lenght, clock, completedInstructions, instructionList, iNum):
+def renderPipeline(pipeline, lenght, clock, completedInstructions, instructionList, iNum, printBegin):
     for i in range(40):
         print("-", end=" ")  # display "------"
     print()  # move cursor down to next line
@@ -376,28 +376,33 @@ def renderPipeline(pipeline, lenght, clock, completedInstructions, instructionLi
     print()  # move cursor down to next line
     print("CLK", clock)  # display variable clock
     print()  # move cursor down to next line
-    print("CLK\t\t\t\t\t  ", end=" ")
-    for i in range(clock+1):
-        print("{:4d}".format(i), end=" ")
-    for i in range(lenght + 1):  # for i to lenght
+    if printBegin == 0:
+        print("CLK\t\t\t\t\t\t", end=" ")
+        for i in range(printBegin, clock+1):
+            print("\t", i, "\t", end=" ")
+    else:
+        print("CLK\t\t\t\t\t\t\t", end=" ")
+        for i in range(printBegin, clock+1):
+            print(i, "\t", end=" ")
+    for i in range((printBegin-printBack), lenght + 1):  # for i to lenght
         print()  # move cursor down to next line
-        print(i + 1, "| ", end=" ")
+        print("{:3d}".format(i + 1), "|", end=" ")
         print("instruction", id[0][i], "\t", end=" ")  # display pipeline steps
-        for j in range(clock + 1):
+        for j in range(printBegin, clock + 1):
             if pipeline[i][j] == 1:
-                print(" FI ", end=" ")
+                print("\t FI ", end=" ")
             elif pipeline[i][j] == 2:
-                print(" DI ", end=" ")
+                print("\t DI ", end=" ")
             elif pipeline[i][j] == 3:
-                print(" FO ", end=" ")
+                print("\t FO ", end=" ")
             elif pipeline[i][j] == 4:
-                print(" CO ", end=" ")
+                print("\t CO ", end=" ")
             elif pipeline[i][j] == 5:
-                print(" EI ", end=" ")
+                print("\t EI ", end=" ")
             elif pipeline[i][j] == 6:
-                print(" WO ", end=" ")
+                print("\t WO ", end=" ")
             else:
-                print("    ", end=" ")
+                print("\t    ", end=" ")
         print()
     print()
     print("\nCompleted Instructions :", completedInstructions)
@@ -441,6 +446,8 @@ lenght = 0
 option = '1'
 completedInstructions = 0
 pipeline = np.zeros((500, 500))
+printBegin = 0
+printBack = 0
 endProgram = False
 #List of assembly instructions
 instructionList = []
@@ -478,19 +485,22 @@ while pc != -2:
     if pc == -2:
         os.system('cls' if os.name == 'nt' else 'clear')
         pipeline[lenght, :] = np.zeros((1, 500))
-        renderPipeline(pipeline, lenght, clock, completedInstructions, instructionList, iNum)
+        renderPipeline(pipeline, lenght, clock, completedInstructions, instructionList, iNum, printBegin)
         break
     #  call function to render the pipeline
     if id[0][count-1] != len(instructionList)+1:
         os.system('cls' if os.name == 'nt' else 'clear')
-        renderPipeline(pipeline, lenght, clock, completedInstructions, instructionList, iNum)
+        renderPipeline(pipeline, lenght, clock, completedInstructions, instructionList, iNum, printBegin)
     else:
         pipeline[lenght, :] = np.zeros((1, 500))
         pipeline[lenght][clock+1] = 1
         os.system('cls' if os.name == 'nt' else 'clear')
-        renderPipeline(pipeline, lenght-1, clock, completedInstructions, instructionList, iNum)
+        renderPipeline(pipeline, lenght-1, clock, completedInstructions, instructionList, iNum, printBegin)
 
     clock += 1
     if id[0][count-1] < len(instructionList)+1:
         lenght += 1
+    if (clock % 12 == 0):
+        printBegin += 10
+        printBack = 2
     option = input()
