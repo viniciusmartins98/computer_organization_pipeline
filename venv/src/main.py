@@ -374,20 +374,14 @@ def renderPipeline(pipeline, lenght, clock, completedInstructions, instructionLi
     printInstructionList(instructionList)
     printRegisters()
     print()  # move cursor down to next line
-    print("CLK", clock)  # display variable clock
+    print("CLK", clock, "\t\t\t", end=" ")  # display variable clock
+    for i in range(printBegin, clock+1):
+        print(i, "\t", end=" ")
     print()  # move cursor down to next line
-    if printBegin == 0:
-        print("CLK\t\t\t\t\t\t", end=" ")
-        for i in range(printBegin, clock+1):
-            print("\t", i, "\t", end=" ")
-    else:
-        print("CLK\t\t\t\t\t\t\t", end=" ")
-        for i in range(printBegin, clock+1):
-            print(i, "\t", end=" ")
     for i in range((printBegin-printBack), lenght + 1):  # for i to lenght
         print()  # move cursor down to next line
         print("{:3d}".format(i + 1), "|", end=" ")
-        print("instruction", id[0][i], "\t", end=" ")  # display pipeline steps
+        print("instruction", id[0][i], end=" ")  # display pipeline steps
         for j in range(printBegin, clock + 1):
             if pipeline[i][j] == 1:
                 print("\t FI ", end=" ")
@@ -501,6 +495,9 @@ while pc != -2:
     if id[0][count-1] < len(instructionList)+1:
         lenght += 1
     if (clock % 12 == 0):
-        printBegin += 10
+        if printBegin == 0:
+            printBegin += 10
+        else:
+            printBegin += 12
         printBack = 2
     option = input()
