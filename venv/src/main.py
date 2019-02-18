@@ -365,7 +365,7 @@ def printInstructionList(instructionList):
               instructionList[i].getOP2())
     print("------------------------------------")
 
-def renderPipeline(pipeline, lenght, clock, completedInstructions, instructionList, iNum, printBegin):
+def renderPipeline(pipeline, lenght, clock, completedInstructions, instructionList, iNum, printBegin, auxPrint):
     for i in range(40):
         print("-", end=" ")  # display "------"
     print()  # move cursor down to next line
@@ -378,7 +378,7 @@ def renderPipeline(pipeline, lenght, clock, completedInstructions, instructionLi
     for i in range(printBegin, clock+1):
         print(i, "\t", end=" ")
     print()  # move cursor down to next line
-    for i in range((printBegin-printBack), lenght + 1):  # for i to lenght
+    for i in range(((printBegin-auxPrint)-printBack), lenght + 1):  # for i to lenght
         print()  # move cursor down to next line
         print("{:3d}".format(i + 1), "|", end=" ")
         print("instruction", id[0][i], end=" ")  # display pipeline steps
@@ -442,6 +442,7 @@ completedInstructions = 0
 pipeline = np.zeros((500, 500))
 printBegin = 0
 printBack = 0
+auxPrint = 0
 endProgram = False
 #List of assembly instructions
 instructionList = []
@@ -479,25 +480,26 @@ while pc != -2:
     if pc == -2:
         os.system('cls' if os.name == 'nt' else 'clear')
         pipeline[lenght, :] = np.zeros((1, 500))
-        renderPipeline(pipeline, lenght, clock, completedInstructions, instructionList, iNum, printBegin)
+        renderPipeline(pipeline, lenght, clock, completedInstructions, instructionList, iNum, printBegin, auxPrint)
         break
     #  call function to render the pipeline
     if id[0][count-1] != len(instructionList)+1:
         os.system('cls' if os.name == 'nt' else 'clear')
-        renderPipeline(pipeline, lenght, clock, completedInstructions, instructionList, iNum, printBegin)
+        renderPipeline(pipeline, lenght, clock, completedInstructions, instructionList, iNum, printBegin, auxPrint)
     else:
         pipeline[lenght, :] = np.zeros((1, 500))
         pipeline[lenght][clock+1] = 1
         os.system('cls' if os.name == 'nt' else 'clear')
-        renderPipeline(pipeline, lenght-1, clock, completedInstructions, instructionList, iNum, printBegin)
+        renderPipeline(pipeline, lenght-1, clock, completedInstructions, instructionList, iNum, printBegin, auxPrint)
+        auxPrint += 1
 
     clock += 1
     if id[0][count-1] < len(instructionList)+1:
         lenght += 1
-    if (clock % 12 == 0):
+    if (clock % 8 == 0):
         if printBegin == 0:
-            printBegin += 10
+            printBegin += 6
         else:
-            printBegin += 12
+            printBegin += 8
         printBack = 2
     option = input()
